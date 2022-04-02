@@ -27,22 +27,14 @@ Project File Date:  04/02/2022
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'FreeRTOS_GD32F303'
-compiling remote.c...
-"no source": Warning:  #3036-D: "D:\Keil_v5\ARM\ARMCC\include" was specified as both a system and non-system include directory -- the non-system entry will be ignored
-..\..\..\GD32F303\code\sys_dev\remote.c(102): error:  #136: struct "rmt_sta_s"  has no field "complete"
-      rmt_sta.complete = FALSE;
-..\..\..\GD32F303\code\sys_dev\remote.c(129): error:  #136: struct "rmt_sta_s"  has no field "complete"
-  	if(rmt_sta.complete == TRUE)//????????€??????????????€????????????
-..\..\..\GD32F303\code\sys_dev\remote.c(141): error:  #136: struct "rmt_sta_s"  has no field "complete"
-  		 	rmt_sta.complete=FALSE; //?????????????????????????????????
-..\..\..\GD32F303\code\sys_dev\remote.c(193): error:  #136: struct "rmt_sta_s"  has no field "complete"
-                  rmt_sta.complete = TRUE;    //????????????????????€????????????????€?????????????
-..\..\..\GD32F303\code\sys_dev\remote.c(203): warning:  #1-D: last line of file ends without a newline
-  }
-..\..\..\GD32F303\code\sys_dev\remote.c(156): warning:  #177-D: variable "timer_icinitpara"  was declared but never referenced
-      timer_ic_parameter_struct timer_icinitpara;
-..\..\..\GD32F303\code\sys_dev\remote.c: 3 warnings, 4 errors
-".\Obj\GD32F303.axf" - 4 Error(s), 3 Warning(s).
+compiling bsp_rtc.c...
+..\..\..\GD32F303\code\sys_bsp\bsp_rtc.c(87): warning:  #177-D: variable "s"  was declared but never referenced
+      register long       s;
+..\..\..\GD32F303\code\sys_bsp\bsp_rtc.c: 1 warning, 0 errors
+linking...
+Program Size: Code=22556 RO-data=336 RW-data=280 ZI-data=45872  
+FromELF: creating hex file...
+".\Obj\GD32F303.axf" - 0 Error(s), 1 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -65,7 +57,6 @@ Package Vendor: GigaDevice
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.5.0
-Target not created.
 Build Time Elapsed:  00:00:02
 </pre>
 </body>

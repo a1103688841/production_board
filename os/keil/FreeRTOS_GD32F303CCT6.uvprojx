@@ -339,7 +339,7 @@
               <MiscControls>--gnu --diag_suppress=1295 --locale=english</MiscControls>
               <Define>USE_STDPERIPH_DRIVERm,__DEBUG</Define>
               <Undefine></Undefine>
-              <IncludePath>..\code\Firmware\GD32F30x_Firmware_Library\GD32F30x_standard_peripheral\Include;..\code\Firmware\GD32F30x_Firmware_Library\CMSIS\GD\GD32F30x\Include;..\code\Firmware\GD32F30x_Firmware_Library\CMSIS;..\code\Firmware\GD32F30x_Firmware_Library;..\code\middleware\FreeRTOSv9.0.0\FreeRTOS\Source\include;..\code\middleware\FreeRTOSv9.0.0\FreeRTOS\Source\portable\RVDS\ARM_CM4F;..\code\middleware\FreeRTOSv9.0.0\FreeRTOS;..\code\sys_app;..\code\sys_bsp;..\code\sys_dev;..\code\sys_debug;D:\Keil_v5\ARM\ARMCC\include</IncludePath>
+              <IncludePath>..\code\Firmware\GD32F30x_Firmware_Library\GD32F30x_standard_peripheral\Include;..\code\Firmware\GD32F30x_Firmware_Library\CMSIS\GD\GD32F30x\Include;..\code\Firmware\GD32F30x_Firmware_Library\CMSIS;..\code\Firmware\GD32F30x_Firmware_Library;..\code\middleware\FreeRTOSv9.0.0\FreeRTOS\Source\include;..\code\middleware\FreeRTOSv9.0.0\FreeRTOS\Source\portable\RVDS\ARM_CM4F;..\code\middleware\FreeRTOSv9.0.0\FreeRTOS;..\code\sys_app;..\code\sys_bsp;..\code\sys_dev;..\code\sys_debug</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -444,14 +444,14 @@
               <FilePath>..\..\..\GD32F303\code\sys_dev\dhtc12_sensor.c</FilePath>
             </File>
             <File>
-              <FileName>remote1.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\GD32F303\code\sys_dev\remote1.c</FilePath>
-            </File>
-            <File>
               <FileName>remote.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\GD32F303\code\sys_dev\remote.c</FilePath>
+            </File>
+            <File>
+              <FileName>remote1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\GD32F303\code\sys_dev\remote1.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -477,6 +477,11 @@
               <FileName>bsp_uart.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\GD32F303\code\sys_bsp\bsp_uart.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\GD32F303\code\sys_bsp\bsp_rtc.c</FilePath>
             </File>
           </Files>
         </Group>
