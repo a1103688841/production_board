@@ -1,0 +1,19 @@
+{
+    "C_Cpp.errorSquiggles": "Disabled",
+    "files.associations": {
+        "xutility": "c",
+        "myprint.h": "c",
+        "my_queue.h": "c",
+        "gd32f30x.h": "c",
+        "algorithm": "c",
+        "limits": "c",
+        "bsp_uart.h": "c",
+        "bsp_i2c.h": "c",
+        "dhtc12_sensor.h": "c",
+        "button.h": "c",
+        "my_link.h": "c",
+        "my_print.h": "c",
+        "disp.h": "c",
+        "base_typle.h": "c"
+    }
+}

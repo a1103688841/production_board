@@ -26,7 +26,8 @@ void bsp_init()
 	uart0_interrupt_init();
 	
 	//led_gpio_init();
-	remote_timer4ch1_init();
+	remote_timer2ch1_init();
+	remote_timer3ch2_init();
 	i2c0_simulation_init();
 	disp_read_store();
 	disp_all_link();

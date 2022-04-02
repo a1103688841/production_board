@@ -11,23 +11,22 @@
 #define _BASE_TYPLE_H_
 #include <stdlib.h>
 #include <stdint.h>
-#include <stdbool.h>
 #include <float.h>
 
 #ifndef boolean_t
-    typedef bool boolean_t;
+    typedef char boolean_t;
 #endif
 #ifndef TRUE
-    #define TRUE (boolean_t)1
+    #define TRUE 1
 #endif
 #ifndef FALSE
-    #define FALSE (boolean_t)0
+    #define FALSE 0
 #endif
 #ifndef ON
-    #define ON (boolean_t)1
+    #define ON 1
 #endif
 #ifndef OFF
-    #define OFF (boolean_t)0
+    #define OFF 0
 #endif
 #ifndef float32_t
     typedef float float32_t;

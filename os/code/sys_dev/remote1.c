@@ -9,25 +9,24 @@
  **************************************************/
 #include "base_typle.h"
 #include "gd32f30x.h"
-#include "remote.h"
+#include "remote1.h"
 
 //红外遥控识别码(ID),每款遥控器的该值基本都不一样,但也有一样的.
 //我们选用的遥控器识别码为0
 #define REMOTE_ID 0x80      
 
 #define RMT_PORT 	GPIOB
-#define RMT_PIN 	GPIO_PIN_5
+#define RMT_PIN 	GPIO_PIN_8
 
 struct rmt_sta_s{
     uint8_t leader      :1;
-    
-    
-        uint8_t bank        :1;
+    uint8_t complete    :1;
+    uint8_t bank        :1;
     uint8_t rise        :1;
     uint8_t overflow    :4;
 };    //遥控器接收状态
 
-void remote_timer2ch1_init()
+void remote_timer3ch2_init()
 {   
     timer_parameter_struct timer_initpara;
     
@@ -36,55 +35,54 @@ void remote_timer2ch1_init()
     rcu_periph_clock_enable(RCU_GPIOB);
     
     gpio_init(RMT_PORT,GPIO_MODE_IN_FLOATING,GPIO_OSPEED_50MHZ,RMT_PIN);
-    gpio_pin_remap_config(GPIO_TIMER2_PARTIAL_REMAP, ENABLE);
 
-    rcu_periph_clock_enable(RCU_TIMER2);
-    timer_deinit(TIMER2);
+    rcu_periph_clock_enable(RCU_TIMER3);
+    timer_deinit(TIMER3);
 
-    /* TIMER2 configuration */
+    /* TIMER3 configuration */
     timer_initpara.prescaler         = 119;
     timer_initpara.alignedmode       = TIMER_COUNTER_EDGE;
     timer_initpara.counterdirection  = TIMER_COUNTER_UP;
     timer_initpara.period            = 10000;
     timer_initpara.clockdivision     = TIMER_CKDIV_DIV1;
     timer_initpara.repetitioncounter = 0;
-    timer_init(TIMER2,&timer_initpara);
+    timer_init(TIMER3,&timer_initpara);
 
-    time2ch1_capture_rise_init();
+    time3ch2_capture_rise_init();
 
     /* auto-reload preload enable */
-    timer_auto_reload_shadow_enable(TIMER2);
+    timer_auto_reload_shadow_enable(TIMER3);
     /* clear channel 1 interrupt bit */
-    timer_interrupt_flag_clear(TIMER2,TIMER_INT_FLAG_CH1);
+    timer_interrupt_flag_clear(TIMER3,TIMER_INT_FLAG_CH2);
     /* channel 1 interrupt enable */
-    timer_interrupt_enable(TIMER2,TIMER_INT_CH1|TIMER_INT_UP);
+    timer_interrupt_enable(TIMER3,TIMER_INT_CH2|TIMER_INT_UP);
 
-    /* TIMER2 counter enable */
-    timer_enable(TIMER2);
+    /* TIMER3 counter enable */
+    timer_enable(TIMER3);
 
     //NVIC
-    nvic_irq_enable(TIMER2_IRQn, 1, 1);
+    nvic_irq_enable(TIMER3_IRQn, 1, 1);
 }
 
-static void time2ch1_capture_rise_init()
+static void time3ch2_capture_rise_init()
 {
     timer_ic_parameter_struct timer_icinitpara;
-    /* TIMER2 CH1 input capture configuration */
+    /* TIMER3 CH2 input capture configuration */
     timer_icinitpara.icpolarity  = TIMER_IC_POLARITY_RISING;
     timer_icinitpara.icselection = TIMER_IC_SELECTION_DIRECTTI;
     timer_icinitpara.icprescaler = TIMER_IC_PSC_DIV1;
     timer_icinitpara.icfilter    = 0x3;
-    timer_input_capture_config(TIMER2,TIMER_CH_1,&timer_icinitpara);
+    timer_input_capture_config(TIMER3,TIMER_CH_2,&timer_icinitpara);
 }
-static void time2ch1_capture_fall_init()
+static void time3ch2_capture_fall_init()
 {
     timer_ic_parameter_struct timer_icinitpara;
-    /* TIMER2 CH1 input capture configuration */
+    /* TIMER3 CH2 input capture configuration */
     timer_icinitpara.icpolarity  = TIMER_IC_POLARITY_FALLING;
     timer_icinitpara.icselection = TIMER_IC_SELECTION_DIRECTTI;
     timer_icinitpara.icprescaler = TIMER_IC_PSC_DIV1;
     timer_icinitpara.icfilter    = 0x3;
-    timer_input_capture_config(TIMER2,TIMER_CH_1,&timer_icinitpara);
+    timer_input_capture_config(TIMER3,TIMER_CH_2,&timer_icinitpara);
 }
 
 
@@ -100,6 +98,7 @@ static int32_t              key_code;
 static void remote_var_init() {
     rmt_sta.leader = FALSE;
     rmt_sta.complete = FALSE;
+    
     rmt_sta.bank = 0;
     rmt_sta.rise = FALSE;
     rmt_sta.overflow = 0;
@@ -107,13 +106,7 @@ static void remote_var_init() {
     rmt_rec = 0;
     rmt_repet = 0;
 }
-
-/****************************************** 
- * @description: 
- * @param {*}
- * @return {*}
- ******************************************/
-int32_t get_remote_code()
+int32_t get_remote1_code()
 {
 	return key_code;
 }
@@ -122,7 +115,7 @@ int32_t get_remote_code()
  * @param {*}
  * @return {*}
  **************************************************/
-int32_t remote_scan(void)
+int32_t remote1_scan(void)
 {        
 	int32_t sta=-1;       
     uint8_t t1,t2;  
@@ -146,25 +139,26 @@ int32_t remote_scan(void)
     return sta;
 }
 
+
 /************************************************** 
  * @description: 
  * @param {*}
  * @return {*}
  **************************************************/
-void TIMER2_IRQHandler(void)
+void TIMER3_IRQHandler(void)
 {
     timer_ic_parameter_struct timer_icinitpara;
-    if(SET == timer_interrupt_flag_get(TIMER2,TIMER_INT_FLAG_CH1)){
-        timer_interrupt_flag_clear(TIMER2,TIMER_INT_FLAG_CH1);
+    if(SET == timer_interrupt_flag_get(TIMER3,TIMER_INT_FLAG_CH2)){
+        timer_interrupt_flag_clear(TIMER3,TIMER_INT_FLAG_CH2);
         //NEC编码上沿处理
         if(gpio_input_bit_get(RMT_PORT, RMT_PIN) == TRUE) {
-            time2ch1_capture_fall_init();
-            timer_counter_value_config(TIMER2, 0);
+            time3ch2_capture_fall_init();
+            timer_counter_value_config(TIMER3, 0);
             rmt_sta.rise = TRUE;
         } else {
         //NEC编码下沿处理
-			high_time = timer_counter_read(TIMER2);     //读取CCR1也可以清CC1IF标志位
-			time2ch1_capture_rise_init();   //设置为上升沿捕获
+			high_time = timer_counter_read(TIMER3);     //读取CCR1也可以清CC1IF标志位
+			time3ch2_capture_rise_init();   //设置为上升沿捕获
 			if(rmt_sta.rise == TRUE) {      //完成一次高电平捕获 
  				if(rmt_sta.leader == TRUE) {            //接收到了引导码
 					if(300<high_time&&high_time<800){   //560为标准值,560us
@@ -184,8 +178,8 @@ void TIMER2_IRQHandler(void)
 			}
             rmt_sta.rise = FALSE;
         }
-    } else if(SET == timer_interrupt_flag_get(TIMER2,TIMER_INT_FLAG_UP)){
-        timer_interrupt_flag_clear(TIMER2,TIMER_INT_FLAG_UP);
+    } else if(SET == timer_interrupt_flag_get(TIMER3,TIMER_INT_FLAG_UP)){
+        timer_interrupt_flag_clear(TIMER3,TIMER_INT_FLAG_UP);
         //NEC编码10ms溢出处理
 		if(rmt_sta.leader == TRUE) {  //上次有数据被接收到了
             rmt_sta.rise = FALSE;   //取消上升沿已经被捕获标记

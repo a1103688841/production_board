@@ -15,6 +15,7 @@
 #include "my_print.h"
 #include "button.h"
 #include "remote.h"
+#include "remote1.h"
 #include "dhtc12_sensor.h"
 #include "gd32f30x.h"
 #include "bsp_i2c.h"
@@ -83,16 +84,16 @@ static void AppTaskCreate(void)
                         (UBaseType_t    )5,	    /* 任务的优先级 */
                         (TaskHandle_t*  )&button_task_handle);/* 任务控制块指针 */
   xReturn = xTaskCreate((TaskFunction_t )dhtc12_task, /* 任务入口函数 */
-                        (const char*    )"button_task",/* 任务名字 */
+                        (const char*    )"dhtc12_task",/* 任务名字 */
                         (uint16_t       )128,   /* 任务栈大小 */
                         (void*          )NULL,	/* 任务入口函数参数 */
-                        (UBaseType_t    )9,	    /* 任务的优先级 */
+                        (UBaseType_t    )4,	    /* 任务的优先级 */
                         (TaskHandle_t*  )&dhtc12_task_handle);/* 任务控制块指针 */
  xReturn = xTaskCreate((TaskFunction_t )nixie_tube_task, /* 任务入口函数 */
                         (const char*    )"nixie_tube_task",/* 任务名字 */
                         (uint16_t       )128,   /* 任务栈大小 */
                         (void*          )NULL,	/* 任务入口函数参数 */
-                        (UBaseType_t    )9,	    /* 任务的优先级 */
+                        (UBaseType_t    )5,	    /* 任务的优先级 */
                         (TaskHandle_t*  )&nixie_tube_task_handle);/* 任务控制块指针 */
   if(pdPASS == xReturn)NULL;
   vTaskDelete(AppTaskCreate_Handle); //删除AppTaskCreate任务
@@ -101,6 +102,7 @@ static void AppTaskCreate(void)
 }
 static void button_task(void* pvParameters)
 {
+		int32_t key;
 //  用于保存上次时间。调用后系统自动更新
     static portTickType PreviousWakeTime; 
 //  设置延时时间，将时间转为节拍数 
@@ -113,9 +115,16 @@ static void button_task(void* pvParameters)
         vTaskDelayUntil( &PreviousWakeTime,TimeIncrement ); 
 //=========================主体部分====================================
         //按键函数
-        set_matrix_button_code(remote_scan());
+				key = remote1_scan();
+				if(remote_scan() != -1)
+				{
+					key = remote_scan();
+				}
+				set_matrix_button_code(key);
         Button_Process();
-				//PRINT("key_cod,%x\n",get_key_code());
+//				PRINT("key_cod,%x\n",get_remote_code());
+//				PRINT("key1_cod,%x\n",get_remote1_code());
+//				PRINT("keyf_cod,%x\n",key);
     }
 }
 
@@ -132,10 +141,11 @@ static void dhtc12_task(void* pvParameters)
 		dhtc12_init();
     while(1)
     {
-      vTaskDelayUntil( &PreviousWakeTime,TimeIncrement);     
-			dhtc12_read_all(&tem_data, &hum_data);
-      hum.data = hum_data;
-      tem.data = tem_data;
+			PRINT("HumAH:%x\n",dhtc12_read_reg(DHTC12_HUMAH));
+//      vTaskDelayUntil( &PreviousWakeTime,TimeIncrement);     
+//			dhtc12_read_all(&tem_data, &hum_data);
+//      hum.data = hum_data;
+//      tem.data = tem_data;
 			//PRINT("%d,%d,%d,%d--\n",get_humA(),get_humB(),tem,hum);
       //PRINT("%d\n",rtc_counter_get());
     }
@@ -146,14 +156,20 @@ static void nixie_tube_task(void* pvParameters)
     static portTickType PreviousWakeTime; 
 //  设置延时时间，将时间转为节拍数 
     const portTickType TimeIncrement = pdMS_TO_TICKS(500); 
+		static int16_t i;
+	  static int16_t num;
 //  获取当前系统时间  
     PreviousWakeTime = xTaskGetTickCount();
+	for(i=0; i<40; i++)
+	{
+		//num = i%10;
+		send_num(8);
+	}
+	hc595_parallel_output();
+	
 	while(1)
     {
       vTaskDelayUntil( &PreviousWakeTime,TimeIncrement);    
 			//disp_task();
-			send_num(8);
-			send_num(8);
-			hc595_parallel_output();
     }
 }

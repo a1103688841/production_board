@@ -160,29 +160,38 @@ boolean_t dhtc12_read_all(int16_t *tem,uint16_t *Hum)
 boolean_t dhtc12_init()
 {
 	int32_t HumA_temp,HumB_temp;
+		uint8_t i;
     dhtc12_rest();
+		i = 0;
     do
 		{
+			i++;
 			HumA = dhtc12_read_reg(DHTC12_HUMAH);
 			PRINT("HumAH\n");
-		}while(HumA==-1);
+		}while(HumA==-1 && i<10);
+		i = 0;
     do
 		{
+			i++;
 			HumA_temp = dhtc12_read_reg(DHTC12_HUMAL);
 			PRINT("HumAL\n");
-		}while(HumA_temp==-1);
-    HumA = (HumA<<8)|HumA_temp;
+		}while(HumA_temp==-1&& i<10);
 		
+    HumA = (HumA<<8)|HumA_temp;
+		i = 0;
     do
 		{
+			i++;
 			HumB = dhtc12_read_reg(DHTC12_HUMBH);
 			PRINT("HumBH\n");
-		}while(HumB==-1);
+		}while(HumB==-1&& i<10);
+		i = 0;
     do
 		{
+			i++;
 			HumB_temp = dhtc12_read_reg(DHTC12_HUMBL);
 			PRINT("HumBL\n");
-		}while(HumB_temp==-1);
+		}while(HumB_temp==-1&& i<10);
     HumB = (HumB<<8)|HumB_temp;
 //    do{HumA = dhtc12_read_reg(DHTC12_HUMAH);}while(HumA==-1);
 //    HumA_temp = dhtc12_read_reg(DHTC12_HUMAL);

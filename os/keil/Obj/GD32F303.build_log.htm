@@ -1,0 +1,72 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: ¦ÌVision V5.36.0.0
+Copyright (C) 2021 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Y 20220312, S, LIC=GMZI6-D674X-MM19I-T56WL-QL62H-WNC8W
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Plus  Version: 5.36.0.0
+Toolchain Path:  D:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 7 (build 960)
+Assembler:       Armasm.exe V5.06 update 7 (build 960)
+Linker/Locator:  ArmLink.exe V5.06 update 7 (build 960)
+Library Manager: ArmAr.exe V5.06 update 7 (build 960)
+Hex Converter:   FromElf.exe V5.06 update 7 (build 960)
+CPU DLL:         SARMCM3.DLL V5.36.0.0
+Dialog DLL:      DCM.DLL V1.17.3.0
+Target DLL:      UL2CM3.DLL V1.164.0.0
+Dialog DLL:      TCM.DLL V1.53.0.0
+ 
+<h2>Project:</h2>
+F:\workspace\production_board\version\os\keil\FreeRTOS_GD32F303CCT6.uvprojx
+Project File Date:  04/02/2022
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
+Build target 'FreeRTOS_GD32F303'
+compiling remote.c...
+"no source": Warning:  #3036-D: "D:\Keil_v5\ARM\ARMCC\include" was specified as both a system and non-system include directory -- the non-system entry will be ignored
+..\..\..\GD32F303\code\sys_dev\remote.c(102): error:  #136: struct "rmt_sta_s"  has no field "complete"
+      rmt_sta.complete = FALSE;
+..\..\..\GD32F303\code\sys_dev\remote.c(129): error:  #136: struct "rmt_sta_s"  has no field "complete"
+  	if(rmt_sta.complete == TRUE)//????????€??????????????€????????????
+..\..\..\GD32F303\code\sys_dev\remote.c(141): error:  #136: struct "rmt_sta_s"  has no field "complete"
+  		 	rmt_sta.complete=FALSE; //?????????????????????????????????
+..\..\..\GD32F303\code\sys_dev\remote.c(193): error:  #136: struct "rmt_sta_s"  has no field "complete"
+                  rmt_sta.complete = TRUE;    //????????????????????€????????????????€?????????????
+..\..\..\GD32F303\code\sys_dev\remote.c(203): warning:  #1-D: last line of file ends without a newline
+  }
+..\..\..\GD32F303\code\sys_dev\remote.c(156): warning:  #177-D: variable "timer_icinitpara"  was declared but never referenced
+      timer_ic_parameter_struct timer_icinitpara;
+..\..\..\GD32F303\code\sys_dev\remote.c: 3 warnings, 4 errors
+".\Obj\GD32F303.axf" - 4 Error(s), 3 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.8.0.pack
+                ARM.CMSIS.5.8.0
+                CMSIS (Common Microcontroller Software Interface Standard)
+   * Component: CORE Version: 5.5.0
+
+Package Vendor: GigaDevice
+                http://gd32mcu.com/data/documents/pack/GigaDevice.GD32F30x_DFP.2.1.0.pack
+                GigaDevice.GD32F30x_DFP.2.1.0
+                GigaDevice GD32F30x Series Device Support and Examples
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\_FreeRTOS_GD32F303
+  D:\Keil_v5_Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include
+  D:\Keil_v5_Packs\GigaDevice\GD32F30x_DFP\2.1.0\Device\Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:5.5.0
+Target not created.
+Build Time Elapsed:  00:00:02
+</pre>
+</body>
+</html>

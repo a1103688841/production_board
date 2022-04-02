@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "systick.h": "c",
+        "gd32f30x.h": "c",
+        "basetyps.h": "c",
+        "base_typle.h": "c",
+        "remote.h": "c",
+        "dhtc12_sensor.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
+}
