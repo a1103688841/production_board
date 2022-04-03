@@ -25,8 +25,8 @@ void delay()
 void i2c0_simulation_init()
 {
     rcu_periph_clock_enable(RCU_GPIOB);
-    gpio_init(SDA_PORT, GPIO_MODE_OUT_OD, GPIO_OSPEED_50MHZ, SDA_PIN);    
-    gpio_init(SCL_PORT, GPIO_MODE_OUT_OD, GPIO_OSPEED_50MHZ, SCL_PIN);
+    gpio_init(SDA_PORT, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, SDA_PIN);    
+    gpio_init(SCL_PORT, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, SCL_PIN);
     SDA_OUT();
     SDA_H();
 }

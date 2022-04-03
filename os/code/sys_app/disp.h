@@ -51,22 +51,35 @@ typedef struct stack_s
 #define SEG_E 	0X10
 #define SEG_F 	0X20
 #define SEG_G 	0X40
-//反逻辑
-#define SEG_DP 	0X7F
 
-#define SMG_NUL	0X80
-
-#define SMG_N0	(SEG_A+SEG_B+SEG_C+SEG_D+SEG_E+SEG_F)
-#define SMG_N1	(SEG_B+SEG_C)
-#define SMG_N2	(SEG_A+SEG_B+SEG_G+SEG_E+SEG_D)
-#define SMG_N3	(SEG_A+SEG_B+SEG_G+SEG_C+SEG_D)
-#define SMG_N4	(SEG_F+SEG_G+SEG_B+SEG_C)
-#define SMG_N5	(SEG_A+SEG_F+SEG_G+SEG_C+SEG_D)
-#define SMG_N6	(SEG_A+SEG_F+SEG_E+SEG_D+SEG_C+SEG_G)
-#define SMG_N7	(SEG_A+SEG_B+SEG_C)
-#define SMG_N8	(SEG_A+SEG_F+SEG_G+SEG_C+SEG_D+SEG_E+SEG_B)
-#define SMG_N9	(SEG_G+SEG_F+SEG_A+SEG_B+SEG_C+SEG_D)
-#define SMG_F_	(SEG_D)
+//反逻辑 0->light
+#define SEG_NDP 	0X80
+#define SEG_DP 	    0X7F
+//num
+#define SMG_N0	    (SEG_A+SEG_B+SEG_C+SEG_D+SEG_E+SEG_F)
+#define SMG_N1	    (SEG_B+SEG_C)
+#define SMG_N2	    (SEG_A+SEG_B+SEG_G+SEG_E+SEG_D)
+#define SMG_N3	    (SEG_A+SEG_B+SEG_G+SEG_C+SEG_D)
+#define SMG_N4	    (SEG_F+SEG_G+SEG_B+SEG_C)
+#define SMG_N5	    (SEG_A+SEG_F+SEG_G+SEG_C+SEG_D)
+#define SMG_N6	    (SEG_A+SEG_F+SEG_E+SEG_D+SEG_C+SEG_G)
+#define SMG_N7	    (SEG_A+SEG_B+SEG_C)
+#define SMG_N8	    (SEG_A+SEG_F+SEG_G+SEG_C+SEG_D+SEG_E+SEG_B)
+#define SMG_N9	    (SEG_G+SEG_F+SEG_A+SEG_B+SEG_C+SEG_D)
+//Reverse num
+#define SMG_RN0	(SEG_A+SEG_B+SEG_C+SEG_D+SEG_E+SEG_F)
+#define SMG_RN1	(SEG_E+SEG_F)
+#define SMG_RN2	(SEG_D+SEG_E+SEG_G+SEG_B+SEG_A)
+#define SMG_RN3	(SEG_D+SEG_E+SEG_G+SEG_F+SEG_A)
+#define SMG_RN4	(SEG_C+SEG_G+SEG_E+SEG_F)
+#define SMG_RN5	(SEG_C+SEG_G+SEG_F+SEG_A+SEG_D)
+#define SMG_RN6	(SEG_D+SEG_C+SEG_B+SEG_A+SEG_F+SEG_G)
+#define SMG_RN7	(SEG_D+SEG_E+SEG_F)
+#define SMG_RN8	(SEG_D+SEG_C+SEG_G+SEG_F+SEG_A+SEG_B+SEG_E)
+#define SMG_RN9	(SEG_D+SEG_C+SEG_G+SEG_E+SEG_F+SEG_A)
+//char
+#define SMG_C_	    (SEG_D)
+#define SMG_SPACK	SEG_NDP
 
 extern struct data_bin_s* head_p;
 extern struct data_bin_s* cur_p;

@@ -10,10 +10,10 @@
 #include "disp.h"
 #include "base_typle.h"
 #include "hc595.h"
-
+//point
 struct data_bin_s* cur_p;
 struct data_bin_s* head_p;
-
+//data bin
 struct data_bin_s time;
 struct data_bin_s accum_yield;
 struct data_bin_s prev_glue_up;
@@ -25,7 +25,7 @@ struct data_bin_s cur_yield_rear;
 struct data_bin_s next_glue_up;
 struct data_bin_s next_glue_dowm;
 struct data_bin_s bank;
-
+//flash
 struct flash_flag_s flash;
 
 STACK_S button_record;
@@ -103,7 +103,6 @@ void disp_all_link()
     syn_disp_store2data();
     disp_num_max_init();
 }
-
 void disp_num_max_init()
 {
     time.num_max        = 12;
@@ -211,33 +210,66 @@ int16_t out_button_stack()
     button_record.i--;
     return temp;
 }
-void send_num(uint8_t num)
+void send_num(uint8_t num, boolean_t dot)
 {
+    uint8_t code;
     switch (num)
     {
-    case 0: hc595_send2register(SMG_N0);break;
-    case 1: hc595_send2register(SMG_N1);break;
-    case 2: hc595_send2register(SMG_N2);break;
-    case 3: hc595_send2register(SMG_N3);break;
-    case 4: hc595_send2register(SMG_N4);break;
-    case 5: hc595_send2register(SMG_N5);break;
-    case 6: hc595_send2register(SMG_N6);break;
-    case 7: hc595_send2register(SMG_N7);break;    
-    case 8: hc595_send2register(SMG_N8);break;  
-    case 9: hc595_send2register(SMG_N9);break;  
-    default:
-        break;
+        case 0: code=SMG_N0;break;
+        case 1: code=SMG_N1;break;
+        case 2: code=SMG_N2;break;
+        case 3: code=SMG_N3;break;
+        case 4: code=SMG_N4;break;
+        case 5: code=SMG_N5;break;
+        case 6: code=SMG_N6;break;
+        case 7: code=SMG_N7;break;    
+        case 8: code=SMG_N8;break;  
+        case 9: code=SMG_N9;break;  
+        default:break;
     }
+    (dot==TRUE)?(code&=SEG_DP):(code|=SEG_NDP);
+    hc595_send2register(code);
 }
+void send_reverse_num(uint8_t num, boolean_t dot)
+{
+    uint8_t code;
+    switch (num)
+    {
+        case 0: code=SMG_RN0;break;
+        case 1: code=SMG_RN1;break;
+        case 2: code=SMG_RN2;break;
+        case 3: code=SMG_RN3;break;
+        case 4: code=SMG_RN4;break;
+        case 5: code=SMG_RN5;break;
+        case 6: code=SMG_RN6;break;
+        case 7: code=SMG_RN7;break;    
+        case 8: code=SMG_RN8;break;  
+        case 9: code=SMG_RN9;break;  
+        default:break;
+    }
+    (dot==TRUE)?(code&=SEG_DP):(code|=SEG_NDP);
+    hc595_send2register(code);
+}
+/****************************************** 
+ * @description: 
+ * @param {uint8_t} one_char
+ * @param {uint8_t} num
+ * @return {*}
+ ******************************************/
 void send_char(uint8_t one_char, uint8_t num)
 {
-    uint8_t data;
-    if(one_char == ' ')data=SMG_NUL;
-    if(one_char == '_')data=SMG_F_;
+    uint8_t code;
+    if(one_char == ' ')code=SMG_SPACK;
+    if(one_char == '_')code=SMG_C_;
     uint8_t i;
-    for(i=0; i<num; i++) hc595_send2register(data);
+    for(i=0; i<num; i++) hc595_send2register(code);
 }
-void disp_task()
+/****************************************** 
+ * @description: 
+ * @param {*}
+ * @return {*}
+ ******************************************/
+void disp_refresh_task()
 {
     uint8_t temp;
     DATA_BIN_S* p;

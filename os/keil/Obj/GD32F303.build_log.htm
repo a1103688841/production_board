@@ -17,24 +17,30 @@ Library Manager: ArmAr.exe V5.06 update 7 (build 960)
 Hex Converter:   FromElf.exe V5.06 update 7 (build 960)
 CPU DLL:         SARMCM3.DLL V5.36.0.0
 Dialog DLL:      DCM.DLL V1.17.3.0
-Target DLL:      UL2CM3.DLL V1.164.0.0
+Target DLL:      Segger\JL2CM3.dll V2.99.40.0
 Dialog DLL:      TCM.DLL V1.53.0.0
  
 <h2>Project:</h2>
 F:\workspace\production_board\version\os\keil\FreeRTOS_GD32F303CCT6.uvprojx
-Project File Date:  04/02/2022
+Project File Date:  04/03/2022
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'FreeRTOS_GD32F303'
-compiling bsp_rtc.c...
-..\..\..\GD32F303\code\sys_bsp\bsp_rtc.c(87): warning:  #177-D: variable "s"  was declared but never referenced
-      register long       s;
-..\..\..\GD32F303\code\sys_bsp\bsp_rtc.c: 1 warning, 0 errors
+compiling main.c...
+..\code\sys_app\main.h(22): warning:  #1-D: last line of file ends without a newline
+  extern int32_t sta;
+..\code\sys_app\main.c(107): warning:  #174-D: expression has no effect
+    if(pdPASS == xReturn)NULL;
+..\code\sys_app\main.c(127): warning:  #223-D: function "remote1_scan" declared implicitly
+  				key = remote1_scan();
+..\code\sys_app\main.c(179): warning:  #223-D: function "disp_refresh_task" declared implicitly
+      disp_refresh_task();
+..\code\sys_app\main.c: 4 warnings, 0 errors
 linking...
-Program Size: Code=22556 RO-data=336 RW-data=280 ZI-data=45872  
+Program Size: Code=25296 RO-data=336 RW-data=276 ZI-data=45876  
 FromELF: creating hex file...
-".\Obj\GD32F303.axf" - 0 Error(s), 1 Warning(s).
+".\Obj\GD32F303.axf" - 0 Error(s), 4 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -57,7 +63,7 @@ Package Vendor: GigaDevice
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.5.0
-Build Time Elapsed:  00:00:02
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>

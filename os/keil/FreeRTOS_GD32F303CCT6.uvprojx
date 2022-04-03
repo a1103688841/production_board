@@ -416,7 +416,7 @@
             <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\GD32F303\code\sys_app\main.c</FilePath>
+              <FilePath>..\code\sys_app\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -424,14 +424,14 @@
           <GroupName>sys_dev</GroupName>
           <Files>
             <File>
-              <FileName>led.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\code\sys_dev\led.c</FilePath>
-            </File>
-            <File>
               <FileName>button.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\code\sys_dev\button.c</FilePath>
+            </File>
+            <File>
+              <FileName>dhtc12_sensor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\sys_dev\dhtc12_sensor.c</FilePath>
             </File>
             <File>
               <FileName>hc595.c</FileName>
@@ -439,19 +439,19 @@
               <FilePath>..\code\sys_dev\hc595.c</FilePath>
             </File>
             <File>
-              <FileName>dhtc12_sensor.c</FileName>
+              <FileName>led.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\GD32F303\code\sys_dev\dhtc12_sensor.c</FilePath>
+              <FilePath>..\code\sys_dev\led.c</FilePath>
             </File>
             <File>
               <FileName>remote.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\GD32F303\code\sys_dev\remote.c</FilePath>
+              <FilePath>..\code\sys_dev\remote.c</FilePath>
             </File>
             <File>
               <FileName>remote1.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\GD32F303\code\sys_dev\remote1.c</FilePath>
+              <FilePath>..\code\sys_dev\remote1.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -464,24 +464,24 @@
               <FilePath>..\code\sys_bsp\bsp.c</FilePath>
             </File>
             <File>
+              <FileName>bsp_fmc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\sys_bsp\bsp_fmc.c</FilePath>
+            </File>
+            <File>
               <FileName>bsp_i2c.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\code\sys_bsp\bsp_i2c.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_fmc.c</FileName>
+              <FileName>bsp_rtc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\GD32F303\code\sys_bsp\bsp_fmc.c</FilePath>
+              <FilePath>..\code\sys_bsp\bsp_rtc.c</FilePath>
             </File>
             <File>
               <FileName>bsp_uart.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\GD32F303\code\sys_bsp\bsp_uart.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_rtc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\GD32F303\code\sys_bsp\bsp_rtc.c</FilePath>
+              <FilePath>..\code\sys_bsp\bsp_uart.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -491,7 +491,7 @@
             <File>
               <FileName>my_print.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\GD32F303\code\sys_debug\my_print.c</FilePath>
+              <FilePath>..\code\sys_debug\my_print.c</FilePath>
             </File>
           </Files>
         </Group>

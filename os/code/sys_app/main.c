@@ -50,7 +50,16 @@ int main()
 	
   /* 开发板硬件初始化 */
   bsp_init();
-   /* 创建AppTaskCreate任务 */
+//  while (1)
+//  {
+//    uint64_t i;
+//    for(i=0;i<10000;i++);
+//    SCL_H();
+//    for(i=0;i<10000;i++);
+//    SCL_L();
+//  }
+  
+/* 创建AppTaskCreate任务 */
   xReturn = xTaskCreate((TaskFunction_t )AppTaskCreate,  /* 任务入口函数 */
                         (const char*    )"AppTaskCreate",/* 任务名字 */
                         (uint16_t       )512,  /* 任务栈大小 */
@@ -62,7 +71,7 @@ int main()
     vTaskStartScheduler();   /* 启动任务，开启调度 */
   else
     return -1;  
-  
+
   while(1);   /* 正常不会执行到这里 */    
 }
 /***********************************************************************
@@ -128,48 +137,45 @@ static void button_task(void* pvParameters)
     }
 }
 
+/****************************************** 
+ * @description: 
+ * @param {void*} pvParameters
+ * @return {*}
+ ******************************************/
 static void dhtc12_task(void* pvParameters)
 {
-//  用于保存上次时间。调用后系统自动更新
+		//Absolute time delay
     static portTickType PreviousWakeTime; 
-//  设置延时时间，将时间转为节拍数 
     const portTickType TimeIncrement = pdMS_TO_TICKS(2000); 
-//  获取当前系统时间  
     PreviousWakeTime = xTaskGetTickCount(); 
+		//dhtc init
 		int16_t tem_data;
 		uint16_t hum_data;
 		dhtc12_init();
     while(1)
     {
-			PRINT("HumAH:%x\n",dhtc12_read_reg(DHTC12_HUMAH));
-//      vTaskDelayUntil( &PreviousWakeTime,TimeIncrement);     
-//			dhtc12_read_all(&tem_data, &hum_data);
-//      hum.data = hum_data;
-//      tem.data = tem_data;
-			//PRINT("%d,%d,%d,%d--\n",get_humA(),get_humB(),tem,hum);
-      //PRINT("%d\n",rtc_counter_get());
+			//time synchronization 
+      vTaskDelayUntil( &PreviousWakeTime,TimeIncrement);    
+			//dhtc read			
+			dhtc12_read_all(&tem_data, &hum_data);
+      hum.data = hum_data;
+      tem.data = tem_data;
+			PRINT("dhtc:%d,%d,%d,%d\n",get_humA(),get_humB(),tem.data,hum.data);
     }
 }
+/****************************************** 
+ * @description: 
+ * @param {void*} pvParameters
+ * @return {*}
+ ******************************************/
 static void nixie_tube_task(void* pvParameters)
 {
-//  用于保存上次时间。调用后系统自动更新
-    static portTickType PreviousWakeTime; 
-//  设置延时时间，将时间转为节拍数 
-    const portTickType TimeIncrement = pdMS_TO_TICKS(500); 
-		static int16_t i;
-	  static int16_t num;
-//  获取当前系统时间  
-    PreviousWakeTime = xTaskGetTickCount();
-	for(i=0; i<40; i++)
-	{
-		//num = i%10;
-		send_num(8);
-	}
-	hc595_parallel_output();
-	
-	while(1)
-    {
-      vTaskDelayUntil( &PreviousWakeTime,TimeIncrement);    
-			//disp_task();
-    }
+  static portTickType PreviousWakeTime; 
+  const portTickType TimeIncrement = pdMS_TO_TICKS(500); 
+  PreviousWakeTime = xTaskGetTickCount();
+  while(1)
+  {
+    vTaskDelayUntil( &PreviousWakeTime,TimeIncrement);    
+    disp_refresh_task();
+  }
 }

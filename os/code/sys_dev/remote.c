@@ -20,12 +20,12 @@
 
 struct rmt_sta_s{
     uint8_t leader      :1;
-    
-    
-        uint8_t bank        :1;
+    uint8_t complete    :1;
+    uint8_t bank        :1;
     uint8_t rise        :1;
     uint8_t overflow    :4;
 };    //遥控器接收状态
+
 
 void remote_timer2ch1_init()
 {   

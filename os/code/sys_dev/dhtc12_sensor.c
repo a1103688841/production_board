@@ -16,14 +16,30 @@
 
 static int32_t HumA,HumB;
 
+/****************************************** 
+ * @description: 
+ * @param {*}
+ * @return {*}
+ ******************************************/
 uint16_t get_humA()
 {
 	return HumA;
 }
+/****************************************** 
+ * @description: 
+ * @param {*}
+ * @return {*}
+ ******************************************/
 uint16_t get_humB()
 {
 	return HumB;
 }
+/****************************************** 
+ * @description: 
+ * @param {uint8_t} data
+ * @param {uint8_t} nbrOfBytes
+ * @return {*}
+ ******************************************/
 const uint16_t POLYNOMIAL = 0x131;  //P(x)=x^8+x^5+x^4+1 = 100110001
 uint8_t SHT3x_CheckCrc(uint8_t data[], uint8_t nbrOfBytes)  //跟SHT30一样只是将CRC值到会到data后返回
 {
@@ -45,6 +61,11 @@ uint8_t SHT3x_CheckCrc(uint8_t data[], uint8_t nbrOfBytes)  //跟SHT30一样只�
   else return 0;
 }
 //读取寄存器数据
+/****************************************** 
+ * @description: 
+ * @param {uint16_t} command
+ * @return {*}
+ ******************************************/
 int32_t dhtc12_read_reg(uint16_t command)
 {
 	uint8_t error,data[3];
@@ -74,6 +95,11 @@ int32_t dhtc12_read_reg(uint16_t command)
 		return -1;
 	}
 }
+/****************************************** 
+ * @description: 
+ * @param {*}
+ * @return {*}
+ ******************************************/
 boolean_t dhtc12_rest() 
 {
     i2c_start();
@@ -87,7 +113,13 @@ boolean_t dhtc12_rest()
     return TRUE;
 }
 
-boolean_t dhtc12_read_all(int16_t *tem,uint16_t *Hum) 
+/****************************************** 
+ * @description: 
+ * @param {int16_t} *tem
+ * @param {uint16_t} *Hum
+ * @return {*}
+ ******************************************/
+boolean_t dhtc12_read_all(int16_t* tem, uint16_t *Hum) 
 {
     uint8_t i;
     uint8_t error = FALSE;
@@ -157,48 +189,51 @@ boolean_t dhtc12_read_all(int16_t *tem,uint16_t *Hum)
 	return !error;
 }
 
+/****************************************** 
+ * @description: 
+ * @param {*}
+ * @return {*}
+ ******************************************/
 boolean_t dhtc12_init()
 {
-	int32_t HumA_temp,HumB_temp;
+	  int32_t HumA_temp,HumB_temp;
 		uint8_t i;
+    //rest
     dhtc12_rest();
+    //A
 		i = 0;
     do
 		{
 			i++;
 			HumA = dhtc12_read_reg(DHTC12_HUMAH);
-			PRINT("HumAH\n");
+			PRINT("HumAH:%x\n",HumA);
 		}while(HumA==-1 && i<10);
 		i = 0;
     do
 		{
 			i++;
 			HumA_temp = dhtc12_read_reg(DHTC12_HUMAL);
-			PRINT("HumAL\n");
+			PRINT("HumAL:%x\n",HumA_temp);
 		}while(HumA_temp==-1&& i<10);
-		
     HumA = (HumA<<8)|HumA_temp;
+    PRINT("HumA:%x\n",HumA);
+    //B
 		i = 0;
     do
 		{
 			i++;
 			HumB = dhtc12_read_reg(DHTC12_HUMBH);
-			PRINT("HumBH\n");
+			PRINT("HumBH:%x\n",HumB);
 		}while(HumB==-1&& i<10);
 		i = 0;
     do
 		{
 			i++;
 			HumB_temp = dhtc12_read_reg(DHTC12_HUMBL);
-			PRINT("HumBL\n");
+			PRINT("HumBL:%x\n",HumB_temp);
 		}while(HumB_temp==-1&& i<10);
     HumB = (HumB<<8)|HumB_temp;
-//    do{HumA = dhtc12_read_reg(DHTC12_HUMAH);}while(HumA==-1);
-//    HumA_temp = dhtc12_read_reg(DHTC12_HUMAL);
-//    HumA = (HumA<<8)|(HumA_temp&0x00ff);
-//    HumB = dhtc12_read_reg(DHTC12_HUMBH);
-//    HumB_temp = dhtc12_read_reg(DHTC12_HUMBL);
-//    HumB = (HumB<<8)|(HumB_temp&0x00ff);
+    PRINT("HumB:%x\n",HumB);
 
 	return TRUE;
 }
