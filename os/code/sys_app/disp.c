@@ -34,17 +34,22 @@ void disp_clear_link()
     head_p = NULL;
     cur_p = head_p;
 }
-void disp_set_head(DATA_BIN_S* head)
+/******************************************
+ * @description: 
+ * @param {DATA_BIN_S*} head
+ * @return {*}
+******************************************/
+void set_link_head(DATA_BIN_S* head)
 {
+    if(head == NULL) head_p = NULL;
     head_p = head;
     head->next = head;
     head->prev = head;
     cur_p  = head_p;
 }
-void disp_add_link(DATA_BIN_S* add)
+void add_link_node(DATA_BIN_S* add)
 {
-    DATA_BIN_S* p;
-	DATA_BIN_S* p_prev;
+    DATA_BIN_S* p, *p_prev;
     uint8_t i=0;
     if(head_p == NULL)
     {
@@ -54,7 +59,8 @@ void disp_add_link(DATA_BIN_S* add)
     }else{
         p_prev = head_p;
         p = head_p->next;
-        while (p!=NULL && i<100) {
+        while (p!=head_p && i<100)
+        {
             p_prev = p;
             p = p->next;
             i++;
@@ -67,55 +73,79 @@ void disp_add_link(DATA_BIN_S* add)
 }
 void disp_var_init()
 {
-    disp_set_head(&time);
-    disp_add_link(&accum_yield);
-    disp_add_link(&prev_glue_up);
-    disp_add_link(&cur_yield_front);
-    disp_add_link(&prev_glue_dowm);
-    disp_add_link(&tem);
-    disp_add_link(&hum);
-    disp_add_link(&cur_yield_rear);
-    disp_add_link(&next_glue_up);
-    disp_add_link(&next_glue_dowm);
-    disp_add_link(&bank);
+    set_link_head(&time);
+    add_link_node(&accum_yield);
+    add_link_node(&prev_glue_up);
+    add_link_node(&cur_yield_front);
+    add_link_node(&prev_glue_dowm);
+    add_link_node(&tem);
+    add_link_node(&hum);
+    add_link_node(&cur_yield_rear);
+    add_link_node(&next_glue_up);
+    add_link_node(&next_glue_dowm);
+    add_link_node(&bank);
     cover_disp_permission(TRUE);
     cover_disp_flash(FLASH_NULL);
     disp_read_store();
     syn_disp_store2data();
-    disp_num_max_init();  
     clear_button_stack();
 }
+/******************************************
+ * @description: 
+ * @param {*}
+ * @return {*}
+******************************************/
 void disp_all_link()
 {
-    disp_set_head(&time);
-    disp_add_link(&accum_yield);
-    disp_add_link(&prev_glue_up);
-    disp_add_link(&cur_yield_front);
-    disp_add_link(&prev_glue_dowm);
-    disp_add_link(&tem);
-    disp_add_link(&hum);
-    disp_add_link(&cur_yield_rear);
-    disp_add_link(&next_glue_up);
-    disp_add_link(&next_glue_dowm);
-    disp_add_link(&bank);
+    set_link_head(&time);
+    add_link_node(&accum_yield);
+    add_link_node(&prev_glue_up);
+    add_link_node(&cur_yield_front);
+    add_link_node(&prev_glue_dowm);
+    add_link_node(&tem);
+    add_link_node(&hum);
+    add_link_node(&cur_yield_rear);
+    add_link_node(&next_glue_up);
+    add_link_node(&next_glue_dowm);
+    add_link_node(&bank);
     cover_disp_permission(TRUE);
     cover_disp_flash(FLASH_NULL);
     syn_disp_store2data();
-    disp_num_max_init();
 }
-void disp_num_max_init()
+/******************************************
+ * @description: 
+ * @param {DATA_BIN_S*} p
+ * @param {uint8_t} max
+ * @return {*}
+******************************************/
+void set_node_posintion_max(DATA_BIN_S* p, uint8_t max)
 {
-    time.num_max        = 12;
-    accum_yield.num_max = 4;
-    prev_glue_up.num_max    = 2;
-    cur_yield_front.num_max = 2;
-    prev_glue_dowm.num_max  = 2;
-    tem.num_max         = 3;
-    hum.num_max         = 3;
-    cur_yield_rear.num_max  = 2;
-    next_glue_up.num_max    = 2;
-    next_glue_dowm.num_max  = 2;
-    bank.num_max        = 2;
+    uint8_t i;
+    p->position_max = max;
+    p->data_max     = 0;
+    for(i=0; i<max; i++)
+    {
+        p->data_max = p->data_max*10+9;
+    }
+}
+/******************************************
+ * @description: 
+ * @param {*}
+ * @return {*}
+******************************************/
+void link_parameter_init()
+{
+    set_node_posintion_max(&time, 12);
+    set_node_posintion_max(&accum_yield, 4);
+    set_node_posintion_max(&prev_glue_up, 2);
+    set_node_posintion_max(&cur_yield_front, 2);
+    set_node_posintion_max(&prev_glue_dowm, 2);
+    set_node_posintion_max(&tem, 3);
+    set_node_posintion_max(&hum, 3);
+    set_node_posintion_max(&cur_yield_rear, 2);
+    set_node_posintion_max(&next_glue_up, 2);
+    set_node_posintion_max(&next_glue_dowm, 2);
+    set_node_posintion_max(&bank, 2);
 }
 
 void syn_disp_data2store()
@@ -130,7 +160,12 @@ void syn_disp_data2store()
     //     i++;
     // }while(p!=head_p && i<100);
 }
-uint8_t search_disp(DATA_BIN_S* data)
+/******************************************
+ * @description: 
+ * @param {DATA_BIN_S*} data
+ * @return {*}
+******************************************/
+uint8_t search_link(DATA_BIN_S* data)
 {
     DATA_BIN_S* p;
     uint8_t i=0;
@@ -138,6 +173,7 @@ uint8_t search_disp(DATA_BIN_S* data)
     do
     {
         if(p == data) return TRUE;
+        if(p == NULL) return FALSE;
         p = p->next;
         i++;
     }while(p!=head_p && i<100);
@@ -210,6 +246,12 @@ int16_t out_button_stack()
     button_record.i--;
     return temp;
 }
+/******************************************
+ * @description: 
+ * @param {uint8_t} num
+ * @param {boolean_t} dot
+ * @return {*}
+******************************************/
 void send_num(uint8_t num, boolean_t dot)
 {
     uint8_t code;
@@ -230,6 +272,12 @@ void send_num(uint8_t num, boolean_t dot)
     (dot==TRUE)?(code&=SEG_DP):(code|=SEG_NDP);
     hc595_send2register(code);
 }
+/******************************************
+ * @description: 
+ * @param {uint8_t} num
+ * @param {boolean_t} dot
+ * @return {*}
+******************************************/
 void send_reverse_num(uint8_t num, boolean_t dot)
 {
     uint8_t code;
@@ -250,6 +298,15 @@ void send_reverse_num(uint8_t num, boolean_t dot)
     (dot==TRUE)?(code&=SEG_DP):(code|=SEG_NDP);
     hc595_send2register(code);
 }
+/******************************************
+ * @description: 
+ * @param {uint8_t} num
+ * @return {*}
+******************************************/
+void send_null(uint8_t num)
+{
+    send_char(' ', num);
+}
 /****************************************** 
  * @description: 
  * @param {uint8_t} one_char
@@ -264,6 +321,66 @@ void send_char(uint8_t one_char, uint8_t num)
     uint8_t i;
     for(i=0; i<num; i++) hc595_send2register(code);
 }
+/******************************************
+ * @description: 
+ * @param {uint8_t} one_char
+ * @param {uint8_t} num
+ * @return {*}
+******************************************/
+void send_reverse_char(uint8_t one_char, uint8_t num)
+{
+    uint8_t code;
+    if(one_char == ' ')code=SMG_SPACK;
+    if(one_char == '_')code=SMG_RC_;
+    uint8_t i;
+    for(i=0; i<num; i++) hc595_send2register(code);
+}
+/****************************************** 
+ * @description: 
+ * @param {DATA_BIN_S*} p
+ * @param {uint8_t} position
+ * @param {uint8_t} dot
+ * @return {*}
+******************************************/
+void num_deal(DATA_BIN_S* p, uint8_t position, uint8_t dot)
+{
+    int64_t disp;
+    uint8_t i;
+    uint8_t num;
+    num = 0;
+    disp = p->disp;
+    for(i=1; i<position; i++)
+    {
+        disp = disp/10;
+    }
+    num = disp%10;
+    if(p->flash==FLASH_ALL && flash.toggle == TRUE){send_char('_',1);}
+    else if(p->flash==position && flash.toggle==TRUE){send_char('_',1);}
+    else {send_num(num, dot);}
+}
+/******************************************
+ * @description: 
+ * @param {DATA_BIN_S*} p
+ * @param {uint8_t} position
+ * @param {uint8_t} dot
+ * @return {*}
+******************************************/
+void num_reverse_deal(DATA_BIN_S* p, uint8_t position, uint8_t dot)
+{
+    int64_t disp;
+    uint8_t i;
+    uint8_t num;
+    num = 0;
+    disp = p->disp;
+    for(i=1; i<position; i++)
+    {
+        disp = disp/10;
+    }
+    num = disp%10;
+    if(p->flash==FLASH_ALL && flash.toggle == TRUE){send_reverse_char('_',1);}
+    else if(p->flash==position && flash.toggle==TRUE){send_reverse_char('_',1);}
+    else {send_reverse_num(num, dot);}
+}
 /****************************************** 
  * @description: 
  * @param {*}
@@ -271,225 +388,86 @@ void send_char(uint8_t one_char, uint8_t num)
  ******************************************/
 void disp_refresh_task()
 {
-    uint8_t temp;
+    uint8_t num;
     DATA_BIN_S* p;
-    p = &time;
-	if(search_disp(p)) { 
-        if(p->flash == FLASH_ALL && flash.flag == TRUE) {
-            send_char('_',p->num_max);
-        }else{
-            temp = p->disp%10;
-            if (p->flash==1 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/10%10;
-            if (p->flash==2 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/100%10;
-            if (p->flash==3 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/1000%10;
-            if (p->flash==4 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/10000%10;
-            if (p->flash==5 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/100000%10;
-            if (p->flash==6 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/1000000%10;
-            if (p->flash==7 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/10000000%10;
-            if (p->flash==8 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/100000000%10;
-            if (p->flash==9 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/1000000000%10;
-            if (p->flash==10 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/10000000000%10;
-            if (p->flash==11 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/100000000000%10;
-            if (p->flash==12 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}           
-        }
-	}else{
-		send_char(' ',p->num_max);     
-	}
-    p = &accum_yield;
-	if(search_disp(p)) { 
-        if(p->flash == FLASH_ALL && flash.flag == TRUE) {
-            send_char('_',p->num_max);
-        }else{
-            temp = p->disp%10;
-            if (p->flash==1 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/10%10;
-            if (p->flash==2 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/100%10;
-            if (p->flash==3 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/1000%10;
-            if (p->flash==4 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}          
-        }
-	}else{
-		send_char(' ',p->num_max);     
-	}
-    p = &prev_glue_up;
-	if(search_disp(p)) { 
-        if(p->flash == FLASH_ALL && flash.flag == TRUE) {
-            send_char('_',p->num_max);
-        }else{
-            temp = p->disp%10;
-            if (p->flash==1 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/10%10;
-            if (p->flash==2 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}        
-        }
-	}else{
-		send_char(' ',p->num_max);     
-	}
-    p = &cur_yield_front;
-	if(search_disp(p)) { 
-        if(p->flash == FLASH_ALL && flash.flag == TRUE) {
-            send_char('_',p->num_max);
-        }else{
-            temp = p->disp%10;
-            if (p->flash==1 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/10%10;
-            if (p->flash==2 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}        
-        }
-	}else{
-		send_char(' ',p->num_max);     
-	}
+    //clear cache
+    send_null(34);
     p = &prev_glue_dowm;
-	if(search_disp(p)) { 
-        if(p->flash == FLASH_ALL && flash.flag == TRUE) {
-            send_char('_',p->num_max);
-        }else{
-            temp = p->disp%10;
-            if (p->flash==1 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/10%10;
-            if (p->flash==2 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}        
-        }
-	}else{
-		send_char(' ',p->num_max);     
-	}
+ 	if(search_link(p))
+    { 
+        num_deal(p,1,NDP);
+        num_deal(p,2,NDP); 
+ 	}else{
+ 		send_null(2);     
+ 	}
+    p = &prev_glue_up;
+ 	if(search_link(p))
+    { 
+        num_reverse_deal(p,2,NDP);
+        num_reverse_deal(p,1,NDP); 
+ 	}else{
+ 		send_null(2);     
+ 	}
+    //left to right
+    p = &time;
+ 	if(search_link(p))
+    { 
+        //skip second
+        num_deal(p,3,NDP);
+        num_deal(p,4,NDP); 
+        num_deal(p,5,NDP);
+        num_deal(p,6,NDP);
+        num_deal(p,7,NDP);
+        num_deal(p,8,NDP);
+        num_deal(p,9,NDP);
+        num_deal(p,10,NDP);
+        num_deal(p,11,NDP);
+        num_deal(p,12,NDP);
+        num_deal(p,13,NDP);
+        num_deal(p,14,NDP);
+ 	}else{
+ 		send_null(12);     
+ 	}
+    p = &accum_yield;
+ 	if(search_link(p))
+    { 
+		num_reverse_deal(p,4,NDP);
+		num_reverse_deal(p,3,NDP);
+        num_reverse_deal(p,2,NDP);
+        num_reverse_deal(p,1,NDP);
+ 	}else{
+ 		send_null(4);     
+ 	}
+    //left to right
+    p = &cur_yield_front;
+ 	if(search_link(p))
+    { 
+		num_deal(p,1,NDP);
+		num_deal(p,2,NDP);
+ 	}else{
+ 		send_null(2);     
+ 	}
+    //random
+    //order    2 1 3
+    //position 3 2 1
     p = &tem;
-	if(search_disp(p)) { 
-        if(p->flash == FLASH_ALL && flash.flag == TRUE) {
-            send_char('_',p->num_max);
-        }else{
-            temp = p->disp%10;
-            if (p->flash==1 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/10%10;
-            if (p->flash==2 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}        
-            temp = p->disp/100%10;
-            if (p->flash==3 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);} 
-        }
-	}else{
-		send_char(' ',p->num_max);     
-	}
+ 	if(search_link(p))
+    { 
+		num_deal(p,2,DP);
+		num_deal(p,3,NDP);
+        num_reverse_deal(p,1,NDP);
+ 	}else{
+ 		send_null(3);     
+ 	}
+    //left to right
     p = &hum;
-	if(search_disp(p)) { 
-        if(p->flash == FLASH_ALL && flash.flag == TRUE) {
-            send_char('_',p->num_max);
-        }else{
-            temp = p->disp%10;
-            if (p->flash==1 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/10%10;
-            if (p->flash==2 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}        
-            temp = p->disp/100%10;
-            if (p->flash==3 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);} 
-        }
-	}else{
-		send_char(' ',p->num_max);     
-	}
-   p = &cur_yield_rear;
-	if(search_disp(p)) { 
-        if(p->flash == FLASH_ALL && flash.flag == TRUE) {
-            send_char('_',p->num_max);
-        }else{
-            temp = p->disp%10;
-            if (p->flash==1 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/10%10;
-            if (p->flash==2 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}        
-        }
-	}else{
-		send_char(' ',p->num_max);     
-	}
-   p = &next_glue_up;
-	if(search_disp(p)) { 
-        if(p->flash == FLASH_ALL && flash.flag == TRUE) {
-            send_char('_',p->num_max);
-        }else{
-            temp = p->disp%10;
-            if (p->flash==1 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/10%10;
-            if (p->flash==2 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}        
-        }
-	}else{
-		send_char(' ',p->num_max);     
-	}
-   p = &next_glue_dowm;
-	if(search_disp(p)) { 
-        if(p->flash == FLASH_ALL && flash.flag == TRUE) {
-            send_char('_',p->num_max);
-        }else{
-            temp = p->disp%10;
-            if (p->flash==1 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}
-            temp = p->disp/10%10;
-            if (p->flash==2 && flash.flag==TRUE){send_char('_',1);}
-            else{hc595_send2register(temp);}        
-        }
-	}else{
-		send_char(' ',p->num_max);     
-	}
-	hc595_parallel_output();	
+ 	if(search_link(p)) 
+    { 
+		num_deal(p,1,NDP);
+		num_deal(p,2,DP);
+		num_deal(p,3,NDP);
+ 	}else{
+ 		send_null(3);     
+ 	}
+	hc595_parallel_output();
 }
-
-
-        // temp = p->disp%10;
-		// hc595_send2register(temp);
-        // temp = p->disp/10%10;
-		// hc595_send2register(temp);
-        // temp = p->disp/100%10;
-		// hc595_send2register(temp);
-        // temp = p->disp/1000%10;
-		// hc595_send2register(temp);
-        // temp = p->disp/10000%10;
-		// hc595_send2register(temp);
-        // temp = p->disp/100000%10;
-		// hc595_send2register(temp);
-        // temp = p->disp/1000000%10;
-		// hc595_send2register(temp);
-        // temp = p->disp/10000000%10;
-		// hc595_send2register(temp);
-        // temp = p->disp/100000000%10;
-		// hc595_send2register(temp);
-        // temp = p->disp/1000000000%10;
-		// hc595_send2register(temp);
-        // temp = p->disp/10000000000%10;
-		// hc595_send2register(temp);
-        // temp = p->disp/100000000000%10;
-		// hc595_send2register(temp);

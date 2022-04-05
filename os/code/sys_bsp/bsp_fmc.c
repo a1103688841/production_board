@@ -113,9 +113,14 @@ void disp_read_store()
     memcpy(&next_glue_dowm, &store.data.next_glue_dowm, sizeof(DATA_BIN_S));
     memcpy(&bank, &store.data.bank, sizeof(DATA_BIN_S));
 }
+/******************************************
+ * @description: 
+ * @param {*}
+ * @return {*}
+******************************************/
 void disp_write_store()
 {
-		store.data.lock = 0X5A5A5A5A;
+	store.data.lock = 0X5A5A5A5A;
     memcpy(&store.data.time, &time, sizeof(DATA_BIN_S));
     memcpy(&store.data.accum_yield, &accum_yield, sizeof(DATA_BIN_S));
     memcpy(&store.data.prev_glue_up, &prev_glue_up, sizeof(DATA_BIN_S));

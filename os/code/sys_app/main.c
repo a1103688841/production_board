@@ -44,21 +44,16 @@ static void dhtc12_task(void* pvParameters);
 static TaskHandle_t nixie_tube_task_handle = NULL;
 static void nixie_tube_task(void* pvParameters);
 
+static TaskHandle_t peripheral_task_handle = NULL;
+static void peripheral_task(void* pvParameters);
+
 int main()
 {
   BaseType_t xReturn = pdPASS;/* 定义一个创建信息返回值，默认为pdPASS */
 	
   /* 开发板硬件初始化 */
   bsp_init();
-//  while (1)
-//  {
-//    uint64_t i;
-//    for(i=0;i<10000;i++);
-//    SCL_H();
-//    for(i=0;i<10000;i++);
-//    SCL_L();
-//  }
-  
+
 /* 创建AppTaskCreate任务 */
   xReturn = xTaskCreate((TaskFunction_t )AppTaskCreate,  /* 任务入口函数 */
                         (const char*    )"AppTaskCreate",/* 任务名字 */
@@ -102,39 +97,62 @@ static void AppTaskCreate(void)
                         (const char*    )"nixie_tube_task",/* 任务名字 */
                         (uint16_t       )128,   /* 任务栈大小 */
                         (void*          )NULL,	/* 任务入口函数参数 */
-                        (UBaseType_t    )5,	    /* 任务的优先级 */
+                        (UBaseType_t    )6,	    /* 任务的优先级 */
                         (TaskHandle_t*  )&nixie_tube_task_handle);/* 任务控制块指针 */
+ xReturn = xTaskCreate((TaskFunction_t )peripheral_task, /* 任务入口函数 */
+                        (const char*    )"peripheral_task",/* 任务名字 */
+                        (uint16_t       )128,   /* 任务栈大小 */
+                        (void*          )NULL,	/* 任务入口函数参数 */
+                        (UBaseType_t    )2,	    /* 任务的优先级 */
+                        (TaskHandle_t*  )&peripheral_task_handle);/* 任务控制块指针 */
+                        
   if(pdPASS == xReturn)NULL;
   vTaskDelete(AppTaskCreate_Handle); //删除AppTaskCreate任务
-  //hc595_send_data(unsigned char data)
   taskEXIT_CRITICAL();            //退出临界区
 }
+/******************************************
+ * @description: 
+ * @param {void*} pvParameters
+ * @return {*}
+******************************************/
 static void button_task(void* pvParameters)
 {
-		int32_t key;
-//  用于保存上次时间。调用后系统自动更新
-    static portTickType PreviousWakeTime; 
-//  设置延时时间，将时间转为节拍数 
-    const portTickType TimeIncrement = pdMS_TO_TICKS(BUTTON_CYCE); 
-//  获取当前系统时间  
-    PreviousWakeTime = xTaskGetTickCount(); 
-    while(1)
-    {
-//=========================同步部分==================================== 
-        vTaskDelayUntil( &PreviousWakeTime,TimeIncrement ); 
-//=========================主体部分====================================
-        //按键函数
-				key = remote1_scan();
-				if(remote_scan() != -1)
-				{
-					key = remote_scan();
-				}
-				set_matrix_button_code(key);
-        Button_Process();
-//				PRINT("key_cod,%x\n",get_remote_code());
-//				PRINT("key1_cod,%x\n",get_remote1_code());
-//				PRINT("keyf_cod,%x\n",key);
-    }
+  static portTickType PreviousWakeTime; 
+  const portTickType TimeIncrement = pdMS_TO_TICKS(BUTTON_CYCE); 
+  PreviousWakeTime = xTaskGetTickCount(); 
+  int32_t key;
+  uint8_t i;
+  while(1)
+  {
+      vTaskDelayUntil( &PreviousWakeTime,TimeIncrement ); 
+      //按键函数
+      key = remote1_scan();
+      if(remote_scan() != -1)
+      {
+        key = remote_scan();
+      }
+      set_matrix_button_code(key);
+      Button_Process();
+      if(key != -1)
+      {
+          i++;
+          if(i>5)
+          {
+            PRINT("key:0x%x,0x%x,0x%x\n",get_remote_code(),get_remote1_code(),key);
+            i=0;
+          }
+      }else{
+        i = 0;
+      }
+      //peripheral
+      static uint16_t cyc_ms = BUTTON_CYCE;
+      flash.ms += cyc_ms;
+      if(flash.ms > flash.ms_max && flash.disp_doing == FALSE)
+      {
+        (flash.toggle)?(flash.toggle=0):(flash.toggle=1);
+				flash.ms=0;
+      }
+  }
 }
 
 /****************************************** 
@@ -146,7 +164,7 @@ static void dhtc12_task(void* pvParameters)
 {
 		//Absolute time delay
     static portTickType PreviousWakeTime; 
-    const portTickType TimeIncrement = pdMS_TO_TICKS(2000); 
+    const portTickType TimeIncrement = pdMS_TO_TICKS(1000); 
     PreviousWakeTime = xTaskGetTickCount(); 
 		//dhtc init
 		int16_t tem_data;
@@ -160,7 +178,12 @@ static void dhtc12_task(void* pvParameters)
 			dhtc12_read_all(&tem_data, &hum_data);
       hum.data = hum_data;
       tem.data = tem_data;
-			PRINT("dhtc:%d,%d,%d,%d\n",get_humA(),get_humB(),tem.data,hum.data);
+			PRINT("dhtc:%d,%d,%lld,%lld\n",get_humA(),get_humB(),tem.data,hum.data);
+      if(sta == STA_NORMAL)
+      {
+        hum.disp = hum_data;
+        tem.disp = tem_data;
+      }
     }
 }
 /****************************************** 
@@ -173,9 +196,36 @@ static void nixie_tube_task(void* pvParameters)
   static portTickType PreviousWakeTime; 
   const portTickType TimeIncrement = pdMS_TO_TICKS(500); 
   PreviousWakeTime = xTaskGetTickCount();
+  //display
+  uint8_t i;
+  for (i=0; i<34; i++)
+  {
+    send_num(8, TRUE); 
+  }
+    hc595_parallel_output();
+  //vTaskDelay(pdMS_TO_TICKS(5000));
   while(1)
   {
-    vTaskDelayUntil( &PreviousWakeTime,TimeIncrement);    
+    vTaskDelayUntil(&PreviousWakeTime,TimeIncrement);    
+    flash.disp_doing = TRUE;
     disp_refresh_task();
+    flash.disp_doing = FALSE;
+  }
+}
+/******************************************
+ * @description: 
+ * @param {void*} pvParameters
+ * @return {*}
+******************************************/
+static void peripheral_task(void* pvParameters)
+{
+  
+  static portTickType PreviousWakeTime; 
+  const portTickType TimeIncrement = pdMS_TO_TICKS(1000); 
+  PreviousWakeTime = xTaskGetTickCount();
+  while(1)
+  {
+    vTaskDelayUntil(&PreviousWakeTime,TimeIncrement);    
+
   }
 }

@@ -10,6 +10,8 @@
 #include "gd32f30x.h"
 #include "my_print.h"
 #include "disp.h"
+#include "main.h"
+
 #define	STARTOFTIME		1970				//元年
 #define FEBRUARY		2
 #define SECDAY			86400L           /*  一天有多少s */
@@ -219,5 +221,9 @@ void RTC_IRQHandler(void)
         rtc_flag_clear(RTC_FLAG_SECOND);    
         /* enable time update */
         time.data = decode_rtc_cnt(rtc_counter_get());
+		if(sta == STA_NORMAL)
+        {
+            time.disp = time.data;
+        }
     }
 }

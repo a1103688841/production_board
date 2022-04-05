@@ -1,3 +1,6 @@
+/os/keil/Obj/**
+/os/keil/RTE/**
+
 # Prerequisites
 *.d
 

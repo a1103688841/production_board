@@ -130,15 +130,11 @@ void SW_OFF_Down_CallBack(void *btn)
       case STA_NORMAL:
         sta = STA_OFF;
         clear_button_stack();
-        disp_all_link();
-        cover_disp_permission(FALSE);
-        //test
-        disp_write_store();
+        set_link_head(NULL);
         break;
       case STA_OFF:
         sta = STA_NORMAL;
         disp_all_link();
-        cover_disp_permission(TRUE);
         break;
       case STA_EDIT2:
       case STA_EDIT:
@@ -154,6 +150,11 @@ void SW_OFF_Down_CallBack(void *btn)
           break;
   }
 }
+/******************************************
+ * @description: 
+ * @param {void} *btn
+ * @return {*}
+******************************************/
 void SW_EDIT_Down_CallBack(void *btn)
 {
   switch (sta)
@@ -161,12 +162,10 @@ void SW_EDIT_Down_CallBack(void *btn)
       default:
       case STA_NORMAL:
           sta = STA_EDIT;
-          disp_set_head(&accum_yield);
-          disp_add_link(&cur_yield_front);
-          disp_add_link(&prev_glue_up);
-          disp_add_link(&prev_glue_dowm);
-          cover_disp_permission(TRUE);
-          cover_disp_flash(FLASH_NULL);
+          set_link_head(&accum_yield);
+          add_link_node(&cur_yield_front);
+          add_link_node(&prev_glue_up);
+          add_link_node(&prev_glue_dowm);
           accum_yield.flash  = FLASH_ALL;
           break;
   }
@@ -183,8 +182,8 @@ void SW_TYPLE_Down_CallBack(void *btn)
           break;
       case STA_NORMAL:
         sta = STA_COMPENSATION;
-        disp_set_head(&tem);
-        disp_add_link(&hum);
+        set_link_head(&tem);
+        add_link_node(&hum);
         cover_disp_permission(TRUE);
         cover_disp_flash(FLASH_NULL);
         cur_p->flash = 1;
@@ -218,10 +217,10 @@ void SW_DEL_Down_CallBack(void *btn)
       default:
       case STA_NORMAL:
         sta = STA_EDIT2;
-        disp_set_head(&accum_yield);
-        disp_add_link(&cur_yield_rear);
-        disp_add_link(&next_glue_up);
-        disp_add_link(&next_glue_dowm);
+        set_link_head(&accum_yield);
+        add_link_node(&cur_yield_rear);
+        add_link_node(&next_glue_up);
+        add_link_node(&next_glue_dowm);
         cover_disp_permission(TRUE);
         cover_disp_flash(FLASH_NULL);
         accum_yield.flash  = FLASH_ALL;        
@@ -259,14 +258,14 @@ void SW_TIME_Down_CallBack(void *btn)
       case STA_OFF: 
         in_button_stack(STA_OFF);
         sta = STA_TIME;
-        disp_set_head(&time);
+        set_link_head(&time);
         cover_disp_permission(TRUE);
         cover_disp_flash(FLASH_NULL);
         cur_p->flash  = 12;
         break;
       case STA_NORMAL:
           sta = STA_TIME;
-          disp_set_head(&time);
+          set_link_head(&time);
           cover_disp_permission(TRUE);
           cover_disp_flash(FLASH_NULL);
           cur_p->flash  = 12;
@@ -280,7 +279,7 @@ void SW_F2_Down_CallBack(void *btn)
       default:
       case STA_TIME:
           cur_p->flash++;
-          if(cur_p->flash > cur_p->num_max) cur_p->flash = 0;
+          if(cur_p->flash > cur_p->position_max) cur_p->flash = 0;
           break;
       case STA_COMPENSATION:
           if(cur_p->disp > 0) cur_p->disp=-cur_p->disp;
@@ -295,8 +294,14 @@ void SW_OK_Down_CallBack(void *btn)
       case STA_EDIT2:
       case STA_COMPENSATION:
       case STA_EDIT:
-          syn_disp_data2store();
+          //syn_disp_data2store();
           disp_write_store();
+          store_sy
+
+            
+
+
+            
           sta = STA_NORMAL;
           break;
       case STA_TIME:
@@ -328,10 +333,15 @@ void SW_F3_Down_CallBack(void *btn)
           break;
       case STA_TIME:
           cur_p->flash--;
-          if(cur_p->flash <= 0) cur_p->flash = cur_p->num_max;
+          if(cur_p->flash <= 0) cur_p->flash = cur_p->position_max;
           break;
   }
 }
+/******************************************
+ * @description: 
+ * @param {void} *btn
+ * @return {*}
+******************************************/
 void SW_N0_Down_CallBack(void *btn)
 {
   switch (sta)
@@ -340,6 +350,7 @@ void SW_N0_Down_CallBack(void *btn)
       case STA_EDIT2:
       case STA_EDIT:
           cur_p->disp = cur_p->disp *10;
+          if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
           break;
       case STA_COMPENSATION:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 0);
@@ -378,6 +389,7 @@ void SW_N1_Down_CallBack(void *btn)
       case STA_EDIT2:
       case STA_EDIT:
           cur_p->disp = cur_p->disp*10+1;
+          if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
           break;
       case STA_COMPENSATION:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 1);
@@ -395,6 +407,7 @@ void SW_N2_Down_CallBack(void *btn)
       case STA_EDIT2:
       case STA_EDIT:
           cur_p->disp = cur_p->disp*10+2;
+          if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
           break;
       case STA_COMPENSATION:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 2);
@@ -412,6 +425,7 @@ void SW_N3_Down_CallBack(void *btn)
       case STA_EDIT2:
       case STA_EDIT:
           cur_p->disp = cur_p->disp*10+3;
+          if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
           break;
       case STA_COMPENSATION:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 3);
@@ -429,6 +443,7 @@ void SW_N4_Down_CallBack(void *btn)
       case STA_EDIT2:
       case STA_EDIT:
           cur_p->disp = cur_p->disp*10+4;
+          if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
           break;
       case STA_COMPENSATION:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 4);
@@ -446,6 +461,7 @@ void SW_N5_Down_CallBack(void *btn)
       case STA_EDIT2:
       case STA_EDIT:
           cur_p->disp = cur_p->disp*10+5;
+          if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
           break;
       case STA_COMPENSATION:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 5);
@@ -463,6 +479,7 @@ void SW_N6_Down_CallBack(void *btn)
       case STA_EDIT2:
       case STA_EDIT:
           cur_p->disp = cur_p->disp*10+6;
+          if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
           break;
       case STA_COMPENSATION:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 6);
@@ -480,6 +497,7 @@ void SW_N7_Down_CallBack(void *btn)
       case STA_EDIT2:
       case STA_EDIT:
           cur_p->disp = cur_p->disp*10+7;
+          if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
           break;
       case STA_COMPENSATION:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 7);
@@ -497,6 +515,7 @@ void SW_N8_Down_CallBack(void *btn)
       case STA_EDIT2:
       case STA_EDIT:
           cur_p->disp = cur_p->disp*10+8;
+          if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
           break;
       case STA_COMPENSATION:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 8);
@@ -506,6 +525,11 @@ void SW_N8_Down_CallBack(void *btn)
           break;
   }
 }
+/******************************************
+ * @description: 
+ * @param {void} *btn
+ * @return {*}
+******************************************/
 void SW_N9_Down_CallBack(void *btn)
 {
   switch (sta)
@@ -514,6 +538,7 @@ void SW_N9_Down_CallBack(void *btn)
       case STA_EDIT2:
       case STA_EDIT:
           cur_p->disp = cur_p->disp*10+9;
+          if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
           break;
       case STA_COMPENSATION:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 9);

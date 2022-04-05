@@ -15,23 +15,33 @@
 #include "bsp_rtc.h"
 #include "bsp_fmc.h"
 
+#define NDP 0
+#define DP  1
+
+
 typedef struct data_bin_s
 {
     int8_t permission;
     int8_t flash; //INT8_MAX 全闪  0是不闪
-    int8_t num_max;
-    uint32_t disp;
+
+    int64_t disp;
     int64_t data;
     int64_t compensation;
     int64_t store;
+    //fix
+    int8_t  position_max;
+    int64_t data_max;
     struct data_bin_s* next;
     struct data_bin_s* prev;
 }DATA_BIN_S;
 typedef struct flash_flag_s
 {
-    boolean_t   flag;
+    //display doing refresh
+    boolean_t   disp_doing;
+    //flash toggle
+    boolean_t   toggle;
     int16_t     ms;
-    int16_t     toggle_ms;
+    int16_t     ms_max;
 }FLASH_FLAG_S;
 typedef struct stack_s
 {
@@ -78,8 +88,11 @@ typedef struct stack_s
 #define SMG_RN8	(SEG_D+SEG_C+SEG_G+SEG_F+SEG_A+SEG_B+SEG_E)
 #define SMG_RN9	(SEG_D+SEG_C+SEG_G+SEG_E+SEG_F+SEG_A)
 //char
-#define SMG_C_	    (SEG_D)
+#define SMG_C_	    (SEG_D|SEG_NDP)
 #define SMG_SPACK	SEG_NDP
+
+#define SMG_RC_	    (SEG_A|SEG_NDP)
+
 
 extern struct data_bin_s* head_p;
 extern struct data_bin_s* cur_p;
@@ -94,16 +107,17 @@ extern struct data_bin_s cur_yield_rear;
 extern struct data_bin_s next_glue_up;
 extern struct data_bin_s next_glue_dowm;
 extern struct data_bin_s bank;
+extern struct flash_flag_s flash;
 
 
 void disp_clear_link();
-void disp_set_head(DATA_BIN_S* head);
-void disp_add_link(DATA_BIN_S* add);
+void set_link_head(DATA_BIN_S* head);
+void add_link_node(DATA_BIN_S* add);
 void disp_var_init();
 void disp_all_link();
 void disp_read_store();
 void disp_write_store();
-void disp_num_max_init();
+void disp_position_max_init();
 void syn_disp_data2store();
 void syn_disp_store2data();
 void cover_disp_permission(int8_t permission);
