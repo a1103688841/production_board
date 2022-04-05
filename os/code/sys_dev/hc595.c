@@ -1,10 +1,10 @@
 /******************************************
  * @Author: rnf
  * @Date: 2022-04-03 15:32:33
- * @LastEditTime: 2022-04-05 17:30:28
+ * @LastEditTime: 2022-04-06 00:06:51
  * @LastEditors: rnf
  * @Description: 
- * @FilePath: \production_board-master\os\code\sys_dev\hc595.c
+ * @FilePath: \production_board\os\code\sys_dev\hc595.c
  * @rnf wrote this code
 ******************************************/
 #include "base_typle.h"
@@ -67,12 +67,10 @@ void hc595_send2register(uint8_t data)
 ******************************************/
 void hc595_parallel_output()
 {
-	hc595_delay();
 	RCK_L;
 	hc595_delay();
 	RCK_H;
 	hc595_delay();
 	RCK_L;
-	hc595_delay();
 }
 	

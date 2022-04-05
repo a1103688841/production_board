@@ -59,7 +59,7 @@ void bsp_init()
 
 	flash.toggle=0;
 	flash.ms=0;
-	flash.ms_max = 1000;
+	flash.ms_max = 700;
 
 	sta = STA_NORMAL;
 }

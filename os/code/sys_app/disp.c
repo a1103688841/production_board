@@ -492,7 +492,7 @@ void disp_refresh_task()
     uint8_t num;
     DATA_BIN_S* p;
     //clear cache
-    send_null(34);
+    send_null(8);
     p = &prev_glue_dowm;
  	if(search_link(p))
     { 

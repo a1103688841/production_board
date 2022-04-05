@@ -97,7 +97,7 @@ static void AppTaskCreate(void)
                         (const char*    )"nixie_tube_task",/* 任务名字 */
                         (uint16_t       )128,   /* 任务栈大小 */
                         (void*          )NULL,	/* 任务入口函数参数 */
-                        (UBaseType_t    )6,	    /* 任务的优先级 */
+                        (UBaseType_t    )3,	    /* 任务的优先级 */
                         (TaskHandle_t*  )&nixie_tube_task_handle);/* 任务控制块指针 */
  xReturn = xTaskCreate((TaskFunction_t )peripheral_task, /* 任务入口函数 */
                         (const char*    )"peripheral_task",/* 任务名字 */
@@ -194,7 +194,7 @@ static void dhtc12_task(void* pvParameters)
 static void nixie_tube_task(void* pvParameters)
 {
   static portTickType PreviousWakeTime; 
-  const portTickType TimeIncrement = pdMS_TO_TICKS(500); 
+  const portTickType TimeIncrement = pdMS_TO_TICKS(200); 
   PreviousWakeTime = xTaskGetTickCount();
   //display
   uint8_t i;
