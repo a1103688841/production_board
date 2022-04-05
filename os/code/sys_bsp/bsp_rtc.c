@@ -11,6 +11,7 @@
 #include "my_print.h"
 #include "disp.h"
 #include "main.h"
+#include "base_typle.h"
 
 #define	STARTOFTIME		1970				//元年
 #define FEBRUARY		2
@@ -109,11 +110,67 @@ uint32_t encoding_rtc(int64_t time)
         day += days_in_month(i);
     }
     days_in_month(FEBRUARY) = 28;
-		day += rtc.day-1;
+	day += rtc.day-1;
     /* Days are what is left over (+1) from all that. *//*计算当前日期*/
     return rtc.sec+rtc.min*60+rtc.hour*60*60+day*SECDAY;
 }    
+/******************************************
+ * @description: 
+ * @param {int64_t} time
+ * @return {*}
+******************************************/
+boolean_t cheak_rtc(int64_t time)
+{
+    register uint32_t   i;
+    register long       s;
+    register long       day = 0;
+    rtc.sec = time%100;
+    rtc.min = time/100%100;
+    rtc.hour = time/10000%100;
+    rtc.day = time/1000000%100;
+    rtc.mon = time/100000000%100;
+    rtc.year = time/10000000000;
 
+    /* Number of years in days */ /*算出当前年份，起始的计数年份为1970年*/
+    if(rtc.year < STARTOFTIME)
+    {
+        return FALSE;
+    }
+    if(rtc.mon<1 || rtc.mon>12 )
+    {
+        return FALSE;
+    }
+    if (leapyear(rtc.year))
+    {
+        days_in_month(FEBRUARY) = 29;
+    }
+    for (i = 1; i<=12; i++)
+    {
+        if(rtc.day<1 || rtc.day>days_in_month(i))
+        {
+            return FALSE;
+        }
+    }
+    days_in_month(FEBRUARY) = 28;
+	if(rtc.hour<0 || rtc.hour> 24)
+    {
+        return FALSE;
+    }
+ 	if(rtc.hour<0 || rtc.hour> 60)
+    {
+        return FALSE;
+    }
+	if(rtc.hour<0 || rtc.hour> 60)
+    {
+        return FALSE;
+    }   
+    return TRUE;
+}
+/******************************************
+ * @description: 
+ * @param {*}
+ * @return {*}
+******************************************/
 void rtc_configuration(void)
 {
     /* enable PMU and BKPI clocks */
@@ -154,22 +211,26 @@ void rtc_configuration(void)
     /* wait until last write operation on RTC registers has finished */
     rtc_lwoff_wait();
 }
-void time_adjust(void)
+/******************************************
+ * @description: 
+ * @param {int64_t} time
+ * @return {*}
+******************************************/
+void time_adjust(int64_t time)
 {
     uint32_t temp = 0;
     /* wait until last write operation on RTC registers has finished */
     rtc_lwoff_wait();
-    temp = encoding_rtc(20220304000000);
+    temp = encoding_rtc(time);
     /* change the current time */
     rtc_counter_set(temp);
     rtc_lwoff_wait();
-    /* set the alarm time = currenttime + 10 second*/
-    //rtc_alarm_config((temp+10)%0x00015180);
-    //printf("\r\n Set Alarm");
-    //time_display((temp+10)%0x00015180);
-    /* wait until last write operation on RTC registers has finished */
-    //rtc_lwoff_wait();
 }
+/******************************************
+ * @description: 
+ * @param {*}
+ * @return {*}
+******************************************/
 void rtc_init()
 {
     if (bkp_read_data(BKP_DATA_0) != 0xA5A5){
@@ -184,22 +245,23 @@ void rtc_init()
         PRINT("\r\n RTC configured....");
 
         /* adjust time by values entred by the user on the hyperterminal */
-        time_adjust();
+        time_adjust(2022040521083);
 
         bkp_write_data(BKP_DATA_0, 0xA5A5);
     }else{
         /* check if the power on reset flag is set */
-        if (rcu_flag_get(RCU_FLAG_PORRST) != RESET){
+        if (rcu_flag_get(RCU_FLAG_PORRST) != RESET)
+        {
             PRINT("\r\n\n Power On Reset occurred....");
-        }else if (rcu_flag_get(RCU_FLAG_SWRST) != RESET){
+        }
+        else if (rcu_flag_get(RCU_FLAG_SWRST) != RESET)
+        {
             /* check if the pin reset flag is set */
             PRINT("\r\n\n External Reset occurred....");
         }
-
         /* allow access to BKP domain */
         rcu_periph_clock_enable(RCU_PMU);
         pmu_backup_write_enable();
-
         PRINT("\r\n No need to configure RTC....");
         /* wait for RTC registers synchronization */
         rtc_register_sync_wait();
@@ -214,6 +276,11 @@ void rtc_init()
 }
 
 
+/******************************************
+ * @description: 
+ * @param {*}
+ * @return {*}
+******************************************/
 void RTC_IRQHandler(void)
 {
     if (rtc_flag_get(RTC_FLAG_SECOND) != RESET){

@@ -1,3 +1,12 @@
+/******************************************
+ * @Author: rnf
+ * @Date: 2022-04-05 19:19:44
+ * @LastEditTime: 2022-04-05 19:57:23
+ * @LastEditors: rnf
+ * @Description: 
+ * @FilePath: \production_board\os\code\sys_bsp\bsp_fmc.h
+ * @rnf wrote this code
+******************************************/
 /************************************************** 
  * @Author: shuren
  * @Date: 2022-03-04 14:14:12
@@ -13,7 +22,7 @@
 void write_store();
 uint8_t read_store();
 void disp_read_store();
-void disp_write_store();
+void write_store();
 
 
 

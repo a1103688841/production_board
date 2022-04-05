@@ -1,18 +1,19 @@
-/************************************************** 
- * @Author: shuren
- * @Date: 2022-03-02 17:18:54
- * @LastEditTime: 2022-03-03 17:09:58
- * @LastEditors: shuren
+/******************************************
+ * @Author: rnf
+ * @Date: 2022-04-05 19:19:44
+ * @LastEditTime: 2022-04-05 23:47:59
+ * @LastEditors: rnf
  * @Description: 
- * @FilePath: \code\sys_app\main.h
- * @桃之夭夭，灼灼其华。之子于归， 宜其室家。
- **************************************************/
+ * @FilePath: \production_board\os\code\sys_app\main.h
+ * @rnf wrote this code
+******************************************/
 enum
 {
     STA_OFF,
+    STA_DATA_RST,
     STA_NORMAL,
     STA_EDIT,
-    STA_EDIT2,
+    STA_EDIT_CLEAR_TIME,
     STA_TIME,
     STA_CLEAR_TIME,
     STA_COMPENSATION,

@@ -181,8 +181,8 @@ static void dhtc12_task(void* pvParameters)
 			PRINT("dhtc:%d,%d,%lld,%lld\n",get_humA(),get_humB(),tem.data,hum.data);
       if(sta == STA_NORMAL)
       {
-        hum.disp = hum_data;
-        tem.disp = tem_data;
+        hum.disp = hum.data+hum.single*hum.store;
+        tem.disp = tem.data+tem.single*tem.store;
       }
     }
 }

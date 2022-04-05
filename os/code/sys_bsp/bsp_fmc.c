@@ -45,8 +45,70 @@ union store_2k_s
     uint32_t bin32[1024];
 };
 union store_2k_s store;
+
+uint8_t read_store()
+{
+    int16_t i;
+    /* Check the correctness of written data */
+    Address = BANK0_WRITE_START_ADDR;
+    i = 0;
+    do {
+		store.bin32[i] = (*(__IO uint32_t*) Address);
+        if(store.data.lock == 0XFFFFFFFF)return FALSE;
+        Address += 4;      
+        i++; 
+    }while((Address < BANK0_WRITE_END_ADDR)&&(i<2048/4));
+    return TRUE;  
+}
+
+/******************************************
+ * @description: 
+ * @param {*}
+ * @return {*}
+******************************************/
+void disp_read_store()
+{
+    uint8_t flag;
+    flag = read_store();
+    if(flag == FALSE){
+        PRINT("link no store\n");
+        link_parameter_first();
+        return;
+    }
+    memcpy(&time, &store.data.time, sizeof(DATA_BIN_S));
+    memcpy(&accum_yield, &store.data.accum_yield, sizeof(DATA_BIN_S));
+    memcpy(&prev_glue_up, &store.data.prev_glue_up, sizeof(DATA_BIN_S));
+    memcpy(&cur_yield_front, &store.data.cur_yield_front, sizeof(DATA_BIN_S));
+    memcpy(&prev_glue_dowm, &store.data.prev_glue_dowm, sizeof(DATA_BIN_S));
+    memcpy(&tem, &store.data.tem, sizeof(DATA_BIN_S));
+    memcpy(&hum, &store.data.hum, sizeof(DATA_BIN_S));
+    memcpy(&cur_yield_rear, &store.data.cur_yield_rear, sizeof(DATA_BIN_S));
+    memcpy(&next_glue_up, &store.data.next_glue_up, sizeof(DATA_BIN_S));
+    memcpy(&next_glue_dowm, &store.data.next_glue_dowm, sizeof(DATA_BIN_S));
+    memcpy(&bank, &store.data.bank, sizeof(DATA_BIN_S));
+    disp_all_link();
+    link_parameter_init();
+}
+/******************************************
+ * @description: 
+ * @param {*}
+ * @return {*}
+******************************************/
 void write_store()
 {
+	store.data.lock = 0X5A5A5A5A;
+    memcpy(&store.data.time, &time, sizeof(DATA_BIN_S));
+    memcpy(&store.data.accum_yield, &accum_yield, sizeof(DATA_BIN_S));
+    memcpy(&store.data.prev_glue_up, &prev_glue_up, sizeof(DATA_BIN_S));
+    memcpy(&store.data.cur_yield_front, &cur_yield_front, sizeof(DATA_BIN_S));
+    memcpy(&store.data.prev_glue_dowm, &prev_glue_dowm, sizeof(DATA_BIN_S));
+    memcpy(&store.data.tem, &tem, sizeof(DATA_BIN_S));
+    memcpy(&store.data.hum, &hum, sizeof(DATA_BIN_S));
+    memcpy(&store.data.cur_yield_rear, &cur_yield_rear, sizeof(DATA_BIN_S));
+    memcpy(&store.data.next_glue_up, &next_glue_up, sizeof(DATA_BIN_S));
+    memcpy(&store.data.next_glue_dowm, &next_glue_dowm, sizeof(DATA_BIN_S));
+    memcpy(&store.data.bank, &bank, sizeof(DATA_BIN_S)); 
+
     int i;
     /* unlock the flash program/erase controller */
     fmc_unlock();
@@ -76,61 +138,5 @@ void write_store()
             i++;
             Address = Address + 4;
         }
-    }
-}
-uint8_t read_store()
-{
-    int16_t i;
-    /* Check the correctness of written data */
-    Address = BANK0_WRITE_START_ADDR;
-    i = 0;
-    do {
-		store.bin32[i] = (*(__IO uint32_t*) Address);
-        if(store.data.lock == 0XFFFFFFFF)return FALSE;
-        Address += 4;      
-        i++; 
-    }while((Address < BANK0_WRITE_END_ADDR)&&(i<2048/4));
-    return TRUE;  
-}
-
-void disp_read_store()
-{
-    uint8_t flag;
-    flag = read_store();
-    if(flag == FALSE){
-        PRINT("link no store");
-        return;
-    }
-    memcpy(&time, &store.data.time, sizeof(DATA_BIN_S));
-    memcpy(&accum_yield, &store.data.accum_yield, sizeof(DATA_BIN_S));
-    memcpy(&prev_glue_up, &store.data.prev_glue_up, sizeof(DATA_BIN_S));
-    memcpy(&cur_yield_front, &store.data.cur_yield_front, sizeof(DATA_BIN_S));
-    memcpy(&prev_glue_dowm, &store.data.prev_glue_dowm, sizeof(DATA_BIN_S));
-    memcpy(&tem, &store.data.tem, sizeof(DATA_BIN_S));
-    memcpy(&hum, &store.data.hum, sizeof(DATA_BIN_S));
-    memcpy(&cur_yield_rear, &store.data.cur_yield_rear, sizeof(DATA_BIN_S));
-    memcpy(&next_glue_up, &store.data.next_glue_up, sizeof(DATA_BIN_S));
-    memcpy(&next_glue_dowm, &store.data.next_glue_dowm, sizeof(DATA_BIN_S));
-    memcpy(&bank, &store.data.bank, sizeof(DATA_BIN_S));
-}
-/******************************************
- * @description: 
- * @param {*}
- * @return {*}
-******************************************/
-void disp_write_store()
-{
-	store.data.lock = 0X5A5A5A5A;
-    memcpy(&store.data.time, &time, sizeof(DATA_BIN_S));
-    memcpy(&store.data.accum_yield, &accum_yield, sizeof(DATA_BIN_S));
-    memcpy(&store.data.prev_glue_up, &prev_glue_up, sizeof(DATA_BIN_S));
-    memcpy(&store.data.cur_yield_front, &cur_yield_front, sizeof(DATA_BIN_S));
-    memcpy(&store.data.prev_glue_dowm, &prev_glue_dowm, sizeof(DATA_BIN_S));
-    memcpy(&store.data.tem, &tem, sizeof(DATA_BIN_S));
-    memcpy(&store.data.hum, &hum, sizeof(DATA_BIN_S));
-    memcpy(&store.data.cur_yield_rear, &cur_yield_rear, sizeof(DATA_BIN_S));
-    memcpy(&store.data.next_glue_up, &next_glue_up, sizeof(DATA_BIN_S));
-    memcpy(&store.data.next_glue_dowm, &next_glue_dowm, sizeof(DATA_BIN_S));
-    memcpy(&store.data.bank, &bank, sizeof(DATA_BIN_S)); 
-    write_store();   
+    } 
 }

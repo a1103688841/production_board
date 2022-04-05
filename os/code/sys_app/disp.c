@@ -10,6 +10,8 @@
 #include "disp.h"
 #include "base_typle.h"
 #include "hc595.h"
+#include "main.h"
+
 //point
 struct data_bin_s* cur_p;
 struct data_bin_s* head_p;
@@ -85,9 +87,9 @@ void disp_var_init()
     add_link_node(&next_glue_dowm);
     add_link_node(&bank);
     cover_disp_permission(TRUE);
-    cover_disp_flash(FLASH_NULL);
+    cover_link_par_flash(FLASH_NULL);
     disp_read_store();
-    syn_disp_store2data();
+    syn_link_par_disp2store();
     clear_button_stack();
 }
 /******************************************
@@ -108,9 +110,6 @@ void disp_all_link()
     add_link_node(&next_glue_up);
     add_link_node(&next_glue_dowm);
     add_link_node(&bank);
-    cover_disp_permission(TRUE);
-    cover_disp_flash(FLASH_NULL);
-    syn_disp_store2data();
 }
 /******************************************
  * @description: 
@@ -135,7 +134,7 @@ void set_node_posintion_max(DATA_BIN_S* p, uint8_t max)
 ******************************************/
 void link_parameter_init()
 {
-    set_node_posintion_max(&time, 12);
+    set_node_posintion_max(&time, 14);
     set_node_posintion_max(&accum_yield, 4);
     set_node_posintion_max(&prev_glue_up, 2);
     set_node_posintion_max(&cur_yield_front, 2);
@@ -146,19 +145,101 @@ void link_parameter_init()
     set_node_posintion_max(&next_glue_up, 2);
     set_node_posintion_max(&next_glue_dowm, 2);
     set_node_posintion_max(&bank, 2);
+    cover_link_par_flash(FLASH_NULL);
 }
-
-void syn_disp_data2store()
+/******************************************
+ * @description: 
+ * @param {*}
+ * @return {*}
+******************************************/
+void link_parameter_first()
 {
-    // DATA_BIN_S* p;
-    // uint8_t i=0;
-    // p = head_p;
-    // do
-    // {
-    //     p->store = p->data;
-    //     p = p->next;
-    //     i++;
-    // }while(p!=head_p && i<100);
+    disp_all_link();
+    set_node_posintion_max(&time, 14);
+    set_node_posintion_max(&accum_yield, 4);
+    set_node_posintion_max(&prev_glue_up, 2);
+    set_node_posintion_max(&cur_yield_front, 2);
+    set_node_posintion_max(&prev_glue_dowm, 2);
+    set_node_posintion_max(&tem, 3);
+    set_node_posintion_max(&hum, 3);
+    set_node_posintion_max(&cur_yield_rear, 2);
+    set_node_posintion_max(&next_glue_up, 2);
+    set_node_posintion_max(&next_glue_dowm, 2);
+    set_node_posintion_max(&bank, 2);
+    accum_yield.disp = 9999;
+    prev_glue_up.disp = 9;
+    prev_glue_dowm.disp = 9;
+    next_glue_up.disp = 9;
+    next_glue_dowm.disp = 9;
+    cur_yield_front.disp = 0;
+    cur_yield_rear.disp = 0;
+    tem.disp = 0;
+    tem.single = 1;
+    hum.disp = 0;
+    hum.single = 1;
+    {
+        DATA_BIN_S* p;
+        uint8_t i=0;
+        p = head_p;
+        do
+        {
+            p->flash = FLASH_NULL;
+            p->single = 1;
+            p = p->next;
+            i++;
+        }while(p!=head_p && i<100);
+    } 
+}
+/******************************************
+ * @description: 
+ * @param {*}
+ * @return {*}
+******************************************/
+void syn_link_par_disp2store()
+{
+    DATA_BIN_S* p;
+    uint8_t i=0;
+    p = head_p;
+    do
+    {
+        p->store = p->disp;
+        p = p->next;
+        i++;
+    }while(p!=head_p && i<100);
+}
+/******************************************
+ * @description: 
+ * @param {*}
+ * @return {*}
+******************************************/
+void syn_link_par_data2disp()
+{
+    DATA_BIN_S* p;
+    uint8_t i=0;
+    p = head_p;
+    do
+    {
+        p->disp = p->data;
+        p = p->next;
+        i++;
+    }while(p!=head_p && i<100);
+}
+/******************************************
+ * @description: 
+ * @param {*}
+ * @return {*}
+******************************************/
+void syn_link_par_store2disp()
+{
+    DATA_BIN_S* p;
+    uint8_t i=0;
+    p = head_p;
+    do
+    {
+        p->disp = p->store;
+        p = p->next;
+        i++;
+    }while(p!=head_p && i<100);
 }
 /******************************************
  * @description: 
@@ -179,18 +260,6 @@ uint8_t search_link(DATA_BIN_S* data)
     }while(p!=head_p && i<100);
     return FALSE;
 }
-void syn_disp_store2data()
-{
-    DATA_BIN_S* p;
-    uint8_t i=0;
-    p = head_p;
-    do
-    {
-        p->data = p->store;
-        p = p->next;
-        i++;
-    }while(p!=head_p && i<100);   
-}
 void cover_disp_permission(int8_t permission)
 {
     DATA_BIN_S* p;
@@ -203,7 +272,12 @@ void cover_disp_permission(int8_t permission)
         i++;
     }while(p!=head_p && i<100);
 } 
-void cover_disp_flash(int8_t flash)
+/******************************************
+ * @description: 
+ * @param {int8_t} flash
+ * @return {*}
+******************************************/
+void cover_link_par_flash(int8_t flash)
 {
     DATA_BIN_S* p;
     uint8_t i=0;
@@ -215,12 +289,20 @@ void cover_disp_flash(int8_t flash)
         i++;
     }while(p!=head_p && i<100);
 } 
-int32_t set_data(int32_t data, int8_t pos, int8_t num)
+/******************************************
+ * @description: 
+ * @param {int32_t} data
+ * @param {int8_t} pos
+ * @param {int8_t} num
+ * @return {*}
+******************************************/
+int64_t set_data(int64_t data, int8_t pos, int8_t num)
 {
-    int32_t temp = 1;
-    int32_t temp_l, temp_r;
+    int64_t temp = 1;
+    int64_t temp_l, temp_r;
     int8_t  i;
-    for(i=0; i<pos; i++) temp=temp*10;
+		//position is 1 origin
+    for(i=1; i<pos; i++) temp=temp*10;
     temp_l = data%temp;
     temp_r = data/temp;
     temp_r = temp_r/10*10 + num;
@@ -305,7 +387,7 @@ void send_reverse_num(uint8_t num, boolean_t dot)
 ******************************************/
 void send_null(uint8_t num)
 {
-    send_char(' ', num);
+    send_char(' ', NDP,num);
 }
 /****************************************** 
  * @description: 
@@ -313,11 +395,13 @@ void send_null(uint8_t num)
  * @param {uint8_t} num
  * @return {*}
  ******************************************/
-void send_char(uint8_t one_char, uint8_t num)
+void send_char(uint8_t one_char, boolean_t dot, uint8_t num)
 {
     uint8_t code;
     if(one_char == ' ')code=SMG_SPACK;
     if(one_char == '_')code=SMG_C_;
+    if(one_char == '-')code=SMG_SINGLE;
+    (dot==TRUE)?(code&=SEG_DP):(code|=SEG_NDP);
     uint8_t i;
     for(i=0; i<num; i++) hc595_send2register(code);
 }
@@ -327,11 +411,12 @@ void send_char(uint8_t one_char, uint8_t num)
  * @param {uint8_t} num
  * @return {*}
 ******************************************/
-void send_reverse_char(uint8_t one_char, uint8_t num)
+void send_reverse_char(uint8_t one_char, boolean_t dot, uint8_t num)
 {
     uint8_t code;
     if(one_char == ' ')code=SMG_SPACK;
     if(one_char == '_')code=SMG_RC_;
+    (dot==TRUE)?(code&=SEG_DP):(code|=SEG_NDP);
     uint8_t i;
     for(i=0; i<num; i++) hc595_send2register(code);
 }
@@ -354,8 +439,8 @@ void num_deal(DATA_BIN_S* p, uint8_t position, uint8_t dot)
         disp = disp/10;
     }
     num = disp%10;
-    if(p->flash==FLASH_ALL && flash.toggle == TRUE){send_char('_',1);}
-    else if(p->flash==position && flash.toggle==TRUE){send_char('_',1);}
+    if(p->flash==FLASH_ALL && flash.toggle == TRUE){send_char('_',dot,1);}
+    else if(p->flash==position && flash.toggle==TRUE){send_char('_',dot,1);}
     else {send_num(num, dot);}
 }
 /******************************************
@@ -377,9 +462,25 @@ void num_reverse_deal(DATA_BIN_S* p, uint8_t position, uint8_t dot)
         disp = disp/10;
     }
     num = disp%10;
-    if(p->flash==FLASH_ALL && flash.toggle == TRUE){send_reverse_char('_',1);}
-    else if(p->flash==position && flash.toggle==TRUE){send_reverse_char('_',1);}
+    if(p->flash==FLASH_ALL && flash.toggle == TRUE){send_reverse_char('_',dot,1);}
+    else if(p->flash==position && flash.toggle==TRUE){send_reverse_char('_',dot,1);}
     else {send_reverse_num(num, dot);}
+}
+/******************************************
+ * @description: 
+ * @param {DATA_BIN_S*} p
+ * @param {uint8_t} position
+ * @param {uint8_t} dot
+ * @return {*}
+******************************************/
+void single_deal(DATA_BIN_S* p, boolean_t dot)
+{
+    if(p->single == -1)
+    {
+        send_char('-',NDP,1);
+    }else{
+        send_char(' ',NDP,1);
+    }
 }
 /****************************************** 
  * @description: 
@@ -453,9 +554,16 @@ void disp_refresh_task()
     p = &tem;
  	if(search_link(p))
     { 
-		num_deal(p,2,DP);
-		num_deal(p,3,NDP);
-        num_reverse_deal(p,1,NDP);
+        if(sta == STA_COMPENSATION || sta == STA_DATA_RST)
+        {
+            num_deal(p,2,DP);
+            single_deal(p,NDP);
+            num_reverse_deal(p,1,NDP);         
+        }else{
+            num_deal(p,2,DP);
+            num_deal(p,3,NDP);
+            num_reverse_deal(p,1,NDP);
+        }
  	}else{
  		send_null(3);     
  	}
@@ -463,9 +571,16 @@ void disp_refresh_task()
     p = &hum;
  	if(search_link(p)) 
     { 
-		num_deal(p,1,NDP);
-		num_deal(p,2,DP);
-		num_deal(p,3,NDP);
+        if(sta == STA_COMPENSATION || sta == STA_DATA_RST)
+        {
+            num_deal(p,1,NDP);
+            num_deal(p,2,DP);
+            single_deal(p,NDP);
+        }else{
+            num_deal(p,1,NDP);
+            num_deal(p,2,DP);
+            num_deal(p,3,NDP);
+        }
  	}else{
  		send_null(3);     
  	}

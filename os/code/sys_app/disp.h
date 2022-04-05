@@ -23,11 +23,14 @@ typedef struct data_bin_s
 {
     int8_t permission;
     int8_t flash; //INT8_MAX 全闪  0是不闪
-
+     int64_t compensation;
+    //display
     int64_t disp;
+    //peripheral refresh
     int64_t data;
-    int64_t compensation;
+    //store
     int64_t store;
+    int8_t  single;
     //fix
     int8_t  position_max;
     int64_t data_max;
@@ -88,10 +91,10 @@ typedef struct stack_s
 #define SMG_RN8	(SEG_D+SEG_C+SEG_G+SEG_F+SEG_A+SEG_B+SEG_E)
 #define SMG_RN9	(SEG_D+SEG_C+SEG_G+SEG_E+SEG_F+SEG_A)
 //char
-#define SMG_C_	    (SEG_D|SEG_NDP)
+#define SMG_C_	    (SEG_D)
 #define SMG_SPACK	SEG_NDP
-
-#define SMG_RC_	    (SEG_A|SEG_NDP)
+#define SMG_SINGLE  (SEG_G)
+#define SMG_RC_	    (SEG_A)
 
 
 extern struct data_bin_s* head_p;
@@ -115,17 +118,27 @@ void set_link_head(DATA_BIN_S* head);
 void add_link_node(DATA_BIN_S* add);
 void disp_var_init();
 void disp_all_link();
-void disp_read_store();
-void disp_write_store();
-void disp_position_max_init();
-void syn_disp_data2store();
-void syn_disp_store2data();
+void set_node_posintion_max(DATA_BIN_S* p, uint8_t max);
+void link_parameter_init();
+void link_parameter_first();
+void syn_link_par_disp2store();
+void syn_link_par_data2disp();
+void syn_link_par_store2disp();
+uint8_t search_link(DATA_BIN_S* data);
 void cover_disp_permission(int8_t permission);
-void cover_disp_flash(int8_t flash);
-int32_t set_data(int32_t data, int8_t pos, int8_t num);
+void cover_link_par_flash(int8_t flash);
+int64_t set_data(int64_t data, int8_t pos, int8_t num);
 void clear_button_stack();
 void in_button_stack(int16_t sta);
 int16_t out_button_stack();
-
+void send_num(uint8_t num, boolean_t dot);
+void send_reverse_num(uint8_t num, boolean_t dot);
+void send_null(uint8_t num);
+void send_char(uint8_t one_char, boolean_t dot, uint8_t num);
+void send_reverse_char(uint8_t one_char, boolean_t dot, uint8_t num);
+void num_deal(DATA_BIN_S* p, uint8_t position, uint8_t dot);
+void num_reverse_deal(DATA_BIN_S* p, uint8_t position, uint8_t dot);
+void single_deal(DATA_BIN_S* p, boolean_t dot);
+void disp_refresh_task();
 
 #endif

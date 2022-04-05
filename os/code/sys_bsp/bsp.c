@@ -1,11 +1,12 @@
-/****************************************** 
- * @Author: your name
- * @Date: 2022-04-02 23:04:17
- * @LastEditTime: 2022-04-05 18:08:23
+/******************************************
+ * @Author: rnf
+ * @Date: 2022-04-05 19:19:44
+ * @LastEditTime: 2022-04-05 22:06:30
  * @LastEditors: rnf
- * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- * @FilePath: \production_board-master\os\code\sys_bsp\bsp.c
- ******************************************/
+ * @Description: 
+ * @FilePath: \production_board\os\code\sys_bsp\bsp.c
+ * @rnf wrote this code
+******************************************/
 /************************************************** 
  * @Author: shuren
  * @Date: 2022-02-18 15:06:48
@@ -34,6 +35,7 @@
 ******************************************/
 void bsp_init()
 {
+	uint8_t read;
 	nvic_priority_group_set(NVIC_PRIGROUP_PRE2_SUB2);
 	rcu_periph_clock_enable(RCU_AF);
 
@@ -54,8 +56,7 @@ void bsp_init()
 	
 	hc595_init();
 	disp_read_store();
-	disp_all_link();
-	link_parameter_init();
+
 	flash.toggle=0;
 	flash.ms=0;
 	flash.ms_max = 1000;
