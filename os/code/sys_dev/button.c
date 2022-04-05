@@ -296,11 +296,6 @@ void SW_OK_Down_CallBack(void *btn)
       case STA_EDIT:
           //syn_disp_data2store();
           disp_write_store();
-          store_sy
-
-            
-
-
             
           sta = STA_NORMAL;
           break;
