@@ -1,7 +1,7 @@
 /******************************************
  * @Author: rnf
  * @Date: 2022-04-17 15:32:34
- * @LastEditTime: 2022-04-18 23:23:50
+ * @LastEditTime: 2022-04-18 23:58:14
  * @LastEditors: rnf
  * @Description: 
  * @FilePath: \production_board\os\code\sys_dev\relay_24v.c
@@ -11,6 +11,7 @@
 #include "relay_24v.h"
 #include "disp.h"
 #include "gd32f30x.h"
+#include "main.h"
 
 #define RELAY1_CLOCK       RCU_GPIOB
 #define RELAY1_PORT        GPIOB
@@ -103,13 +104,24 @@ void relay_lever(uint8_t uid, uint8_t lever)
 #define PREV_GLUE_DOWM_STORE_UID  2
 #define NEXT_GLUE_UP_STORE_UID    3
 #define NEXT_GLUE_DOWM_STORE_UID  4
+/******************************************
+ * @description: 
+ * @param {int64_t} accumulative
+ * @param {int32_t} cyc_ms
+ * @return {*}
+******************************************/
+static int64_t accumulative_prev;
+void set_accumulative_prev(int64_t accumulative)
+{
+    accumulative_prev = accumulative;
+}
 void relay_response(int64_t accumulative, int32_t cyc_ms)
 {
     static int32_t ms1 = 0;
     static int32_t ms2 = 0;
     static int32_t ms3 = 0;
     static int32_t ms4 = 0;
-    static int64_t accumulative_prev;
+    if(sta != STA_NORMAL) return;
     if(accumulative == 0) return;
     if(accumulative_prev != accumulative)
     {
@@ -140,23 +152,23 @@ void relay_response(int64_t accumulative, int32_t cyc_ms)
     if(ms2 > 1)
     {
         ms2 -= cyc_ms;
-        relay_lever(PREV_GLUE_UP_RELAY_UID, SET);
+        relay_lever(PREV_GLUE_DOWM_RELAY_UID, SET);
     }else{
-        relay_lever(PREV_GLUE_UP_RELAY_UID, RESET);
+        relay_lever(PREV_GLUE_DOWM_RELAY_UID, RESET);
     }
     if(ms3 > 1)
     {
         ms3 -= cyc_ms;
-        relay_lever(PREV_GLUE_UP_RELAY_UID, SET);
+        relay_lever(NEXT_GLUE_UP_RELAY_UID, SET);
     }else{
-        relay_lever(PREV_GLUE_UP_RELAY_UID, RESET);
+        relay_lever(NEXT_GLUE_UP_RELAY_UID, RESET);
     }
     if(ms4 > 1)
     {
         ms4 -= cyc_ms;
-        relay_lever(PREV_GLUE_UP_RELAY_UID, SET);
+        relay_lever(NEXT_GLUE_DOWM_RELAY_UID, SET);
     }else{
-        relay_lever(PREV_GLUE_UP_RELAY_UID, RESET);
+        relay_lever(NEXT_GLUE_DOWM_RELAY_UID, RESET);
     }
     accumulative_prev = accumulative;
 }

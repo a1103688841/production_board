@@ -124,6 +124,14 @@ static uint8_t Read_SW_STOP_Level(void)
 {
   if(matrix_code == 0xe8){return HIGHT;}else{return FALSE;}
 }
+static uint8_t Read_SW_CLR_Level(void)
+{
+  if(switch_code == 0x01){return HIGHT;}else{return FALSE;}
+}
+static uint8_t Read_SW_ADD_Level(void)
+{
+  if(switch_code == 0x02){return HIGHT;}else{return FALSE;}
+}
 /**************************************************************************************************
 *                                 SW call back
 **************************************************************************************************/
@@ -386,6 +394,7 @@ void SW_OK_Down_CallBack(void *btn)
           syn_node_serial_disp2store(serial_data_p);
           write_store();
           syn_link_par_store2disp();
+          set_accumulative_prev(accum_yield.disp);
           sta = STA_NORMAL;
           disp_all_link();
           cover_link_par_flash(FLASH_NULL);
@@ -397,6 +406,7 @@ void SW_OK_Down_CallBack(void *btn)
       case STA_EDIT_REAR:
           syn_link_par_disp2store();
           write_store();
+          set_accumulative_prev(accum_yield.disp);
           sta = STA_NORMAL;
           disp_all_link();
           cover_link_par_flash(FLASH_NULL);
@@ -833,6 +843,50 @@ void SW_SPACE_Down_CallBack(void *btn)
 void SW_STOP_Down_CallBack(void *btn)
 {
 }
+void SW_CLR_Down_CallBack(void *btn)
+{
+  switch (sta)
+  {
+      default:
+        break;
+      case STA_NORMAL:
+        cur_yield_front.disp = 0;
+        cur_yield_rear.disp = 0;
+        break;
+      case STA_OFF:
+        break;
+  }
+}
+void SW_CLR_LONG_CallBack(void *btn)
+{
+  switch (sta)
+  {
+      default:
+        break;
+      case STA_NORMAL:
+        accum_yield.disp = 0;
+        cur_yield_front.disp = 0;
+        cur_yield_rear.disp = 0;
+        break;
+      case STA_OFF:
+        break;
+  }
+}
+void SW_ADD_Down_CallBack(void *btn)
+{
+  switch (sta)
+  {
+      default:
+        break;
+      case STA_NORMAL:
+        accum_yield.disp++;
+        cur_yield_front.disp++;
+        cur_yield_rear.disp++;
+        break;
+      case STA_OFF:
+        break;
+  }
+}
 /**************************************************************************************************
 * 函数:                                   buttonGpioInit
 * 说明: 修改按键引脚初始化 
@@ -910,7 +964,12 @@ void buttonAttachInit(void)
   Button_Attach(&sw_space,BUTTON_DOWN,SW_SPACE_Down_CallBack);             //call fuction attach
   Button_Create("stop",&sw_stop,Read_SW_STOP_Level);                     //call fuction attach
   Button_Attach(&sw_stop,BUTTON_DOWN,SW_STOP_Down_CallBack);             //call fuction attach
-
+  //poto switch
+  Button_Create("clr_s",&sw_clr,Read_SW_CLR_Level);                     //call fuction attach
+  Button_Attach(&sw_clr,BUTTON_DOWN,SW_CLR_Down_CallBack);             //call fuction attach
+  Button_Attach(&sw_clr,BUTTON_LONG,SW_CLR_LONG_CallBack);             //call fuction attach
+  Button_Create("add_s",&sw_add,Read_SW_ADD_Level);                     //call fuction attach
+  Button_Attach(&sw_add,BUTTON_DOWN,SW_ADD_Down_CallBack);             //call fuction attach
 }
 
 /**************************************************************************************************

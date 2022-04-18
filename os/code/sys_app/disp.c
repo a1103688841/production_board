@@ -154,15 +154,15 @@ void link_parameter_init()
     set_node_posintion_max(&next_glue_dowm, 2);
     set_node_posintion_max(&bank, 2);
 
-    accum_yield.disp = 0;
-    accum_yield.data = 0;
-    accum_yield.store = 0;
-    cur_yield_front.disp = 0;
-    cur_yield_front.data = 0;
-    cur_yield_front.store = 0;
-    cur_yield_rear.disp = 0;
-    cur_yield_rear.data = 0;
-    cur_yield_rear.store = 0;
+    // accum_yield.disp = 0;
+    // accum_yield.data = 0;
+    // accum_yield.store = 0;
+    // cur_yield_front.disp = 0;
+    // cur_yield_front.data = 0;
+    // cur_yield_front.store = 0;
+    // cur_yield_rear.disp = 0;
+    // cur_yield_rear.data = 0;
+    // cur_yield_rear.store = 0;
 
     disp_all_link();
     cover_link_par_flash(FLASH_NULL);

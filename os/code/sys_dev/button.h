@@ -78,8 +78,8 @@
 #define LONG_FREE_TRIGGER             0 
 
 #define BUTTON_LEVEL_STABLE 	  	40/BUTTON_CYCE   	//消抖时间      (1)*调用周期
-#define BUTTON_LONG_TIME 	      	2000/BUTTON_CYCE		/* 持续n秒((n-1)*调用周期 ms)，认为长按事件 */
-#define BUTTON_LONG_CYCLE       	2000/BUTTON_CYCE		//长按触发周期时间  (n-1)*调用周期 
+#define BUTTON_LONG_TIME 	      	5000/BUTTON_CYCE		/* 持续n秒((n-1)*调用周期 ms)，认为长按事件 */
+#define BUTTON_LONG_CYCLE       	5000/BUTTON_CYCE		//长按触发周期时间  (n-1)*调用周期 
 
 #define BUTTON_CONTINUOS_CYCLE  	1	  									//连按触发周期时间  (n-1)*调用周期  
 #define BUTTON_DOUBLE_TIME      	15 		//双击间隔时间  (n-1)*调用周期  建议在200-600ms
@@ -194,7 +194,8 @@ BUTTON_EXT Button_t 	sw_n8;
 BUTTON_EXT Button_t 	sw_n9;
 BUTTON_EXT Button_t 	sw_space;
 BUTTON_EXT Button_t 	sw_stop;
-
+BUTTON_EXT Button_t 	sw_clr;
+BUTTON_EXT Button_t 	sw_add;
 //记录按键的FIFO
 BUTTON_EXT SW_RECORDFIFO_S sw_record;
 

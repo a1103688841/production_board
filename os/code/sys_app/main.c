@@ -133,7 +133,7 @@ static void button_task(void* pvParameters)
   PreviousWakeTime = xTaskGetTickCount(); 
   int32_t key;
   uint8_t sw;
-  uint8_t i;
+  uint8_t i,ii;
   while(1)
   {
       vTaskDelayUntil( &PreviousWakeTime,TimeIncrement ); 
@@ -153,11 +153,21 @@ static void button_task(void* pvParameters)
           if(i>5)
           {
             PRINT("key:0x%x,0x%x,0x%x\n",get_remote_code(),get_remote1_code(),key);
-            
             i=0;
           }
       }else{
         i = 0;
+      }
+      if(sw != 0xff)
+      {
+          ii++;
+          if(ii>5)
+          {
+            PRINT("sw:0x%x\n",sw);
+            ii=0;
+          }
+      }else{
+        ii = 0;
       }
 			//PRINT("sw:0x%x \n",sw);
   }

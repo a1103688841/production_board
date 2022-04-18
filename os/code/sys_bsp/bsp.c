@@ -1,7 +1,7 @@
 /******************************************
  * @Author: rnf
  * @Date: 2022-04-05 19:19:44
- * @LastEditTime: 2022-04-18 23:01:45
+ * @LastEditTime: 2022-04-18 23:56:06
  * @LastEditors: rnf
  * @Description: 
  * @FilePath: \production_board\os\code\sys_bsp\bsp.c
@@ -63,6 +63,7 @@ void bsp_init()
 	disp_read_store();
     link_parameter_init();
 
+	set_accumulative_prev(accum_yield.disp);
 	sta = STA_NORMAL;
 }
 
