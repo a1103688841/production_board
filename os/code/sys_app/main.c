@@ -89,7 +89,7 @@ static void AppTaskCreate(void)
                         (const char*    )"button_task",/* 任务名字 */
                         (uint16_t       )128,   /* 任务栈大小 */
                         (void*          )NULL,	/* 任务入口函数参数 */
-                        (UBaseType_t    )5,	    /* 任务的优先级 */
+                        (UBaseType_t    )6,	    /* 任务的优先级 */
                         (TaskHandle_t*  )&button_task_handle);/* 任务控制块指针 */
   xReturn = xTaskCreate((TaskFunction_t )dhtc12_task, /* 任务入口函数 */
                         (const char*    )"dhtc12_task",/* 任务名字 */
@@ -113,7 +113,7 @@ static void AppTaskCreate(void)
                         (const char*    )"peripheral_task",/* 任务名字 */
                         (uint16_t       )128,   /* 任务栈大小 */
                         (void*          )NULL,	/* 任务入口函数参数 */
-                        (UBaseType_t    )2,	    /* 任务的优先级 */
+                        (UBaseType_t    )5,	    /* 任务的优先级 */
                         (TaskHandle_t*  )&peripheral_task_handle);/* 任务控制块指针 */
                         
   if(pdPASS == xReturn)NULL;
@@ -160,14 +160,6 @@ static void button_task(void* pvParameters)
         i = 0;
       }
 			//PRINT("sw:0x%x \n",sw);
-      //peripheral
-      flash.ms += cyc_ms;
-      //if(flash.ms > flash.ms_max && flash.disp_doing == FALSE)
-			if(flash.ms > flash.ms_max)
-      {
-				flash.ms =0;
-        (flash.toggle)?(flash.toggle=0):(flash.toggle=1);
-      }
   }
 }
 
@@ -256,13 +248,27 @@ static void nixie_tube_task_2(void* pvParameters)
 ******************************************/
 static void peripheral_task(void* pvParameters)
 {
-  
+  uint16_t cyc_ms = 10;
   static portTickType PreviousWakeTime; 
-  const portTickType TimeIncrement = pdMS_TO_TICKS(1000); 
+  const portTickType TimeIncrement = pdMS_TO_TICKS(cyc_ms); 
   PreviousWakeTime = xTaskGetTickCount();
   while(1)
   {
     vTaskDelayUntil(&PreviousWakeTime,TimeIncrement);    
-
+      //peripheral
+      flash.ms += cyc_ms;
+      flash.sec_ms += cyc_ms;
+      //if(flash.ms > flash.ms_max && flash.disp_doing == FALSE)
+			if(flash.ms > flash.ms_max)
+      {
+				flash.ms =0;
+        (flash.toggle)?(flash.toggle=0):(flash.toggle=1);
+      }
+			if(flash.sec_ms > 500)
+      {
+				flash.sec_ms =0;
+        (flash.sec_toggle)?(flash.sec_toggle=0):(flash.sec_toggle=1);
+      }
+      relay_response(accum_yield.disp,cyc_ms);
   }
 }

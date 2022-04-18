@@ -12,11 +12,6 @@
 #include "hc595.h"
 #include "main.h"
 
-//point
-struct data_bin_s* head_p;
-struct data_bin_s* cur_p;
-struct data_bin_s* serial_p;
-struct data_bin_s* serial_data_p;
 //data bin
 struct data_bin_s time;
 struct data_bin_s accum_yield;
@@ -29,6 +24,13 @@ struct data_bin_s cur_yield_rear;
 struct data_bin_s next_glue_up;
 struct data_bin_s next_glue_dowm;
 struct data_bin_s bank;
+//point
+struct data_bin_s* head_p;
+struct data_bin_s* cur_p;
+struct data_bin_s* serial_p;
+struct data_bin_s* serial_data_p;
+struct data_bin_s* poto_switch_p = &accum_yield;
+struct data_bin_s* channel_num_p = &cur_yield_rear;
 //flash
 struct flash_flag_s flash;
 
@@ -624,13 +626,13 @@ void disp_refresh_task()
  	if(search_link(p))
     { 
 		num_reverse_deal(p,4,NDP);
+        num_reverse_deal(p,3,NDP);
 		if(sta == STA_OPTO_SWITCH)
         {
-            num_reverse_deal(p,3,DP);
+            num_reverse_deal(p,2,DP);
         }else{
-            num_reverse_deal(p,3,NDP);
+            num_reverse_deal(p,2,NDP);
         }
-        num_reverse_deal(p,2,NDP);
         num_reverse_deal(p,1,NDP);
  	}else{
  		send_null(4);     
@@ -744,7 +746,7 @@ void disp_refresh_task_2()
         //skip second
        num_deal2(p,3,NDP);
        num_deal2(p,4,NDP); 
-       num_deal2(p,5,NDP);
+       num_deal2(p,5,flash.sec_toggle);
        num_deal2(p,6,NDP);
  	}else{
         send_null2(4);  

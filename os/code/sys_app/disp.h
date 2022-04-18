@@ -47,6 +47,9 @@ typedef struct flash_flag_s
     boolean_t   toggle;
     int16_t     ms;
     int16_t     ms_max;
+    //time sec
+    boolean_t   sec_toggle;
+    int16_t     sec_ms;
 }FLASH_FLAG_S;
 typedef struct stack_s
 {
@@ -103,6 +106,9 @@ extern struct data_bin_s* head_p;
 extern struct data_bin_s* cur_p;
 extern struct data_bin_s* serial_p;
 extern struct data_bin_s* serial_data_p;
+extern struct data_bin_s* poto_switch_p;
+extern struct data_bin_s* channel_num_p;
+
 extern struct data_bin_s time;
 extern struct data_bin_s accum_yield;
 extern struct data_bin_s prev_glue_up;

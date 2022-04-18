@@ -1,7 +1,7 @@
 /******************************************
  * @Author: rnf
  * @Date: 2022-04-05 19:19:44
- * @LastEditTime: 2022-04-18 21:23:28
+ * @LastEditTime: 2022-04-18 23:01:45
  * @LastEditors: rnf
  * @Description: 
  * @FilePath: \production_board\os\code\sys_bsp\bsp.c
@@ -62,10 +62,6 @@ void bsp_init()
 	hc595_2_init();
 	disp_read_store();
     link_parameter_init();
-
-	flash.toggle=0;
-	flash.ms=0;
-	flash.ms_max = 700;
 
 	sta = STA_NORMAL;
 }

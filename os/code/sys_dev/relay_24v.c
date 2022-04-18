@@ -1,7 +1,7 @@
 /******************************************
  * @Author: rnf
  * @Date: 2022-04-17 15:32:34
- * @LastEditTime: 2022-04-18 22:29:23
+ * @LastEditTime: 2022-04-18 23:23:50
  * @LastEditors: rnf
  * @Description: 
  * @FilePath: \production_board\os\code\sys_dev\relay_24v.c
@@ -9,6 +9,7 @@
 ******************************************/
 #include "base_typle.h"
 #include "relay_24v.h"
+#include "disp.h"
 #include "gd32f30x.h"
 
 #define RELAY1_CLOCK       RCU_GPIOB
@@ -40,6 +41,12 @@ void relay_init()
     gpio_init(RELAY4_PORT, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, RELAY4_PIN);    
 }
 
+/******************************************
+ * @description: 
+ * @param {uint8_t} uid
+ * @param {uint8_t} lever
+ * @return {*}
+******************************************/
 void relay_lever(uint8_t uid, uint8_t lever)
 {
     if(uid == 1)
@@ -87,8 +94,69 @@ void relay_lever(uint8_t uid, uint8_t lever)
         }        
     }
 }
+#define PREV_GLUE_UP_RELAY_UID    1
+#define PREV_GLUE_DOWM_RELAY_UID  2
+#define NEXT_GLUE_UP_RELAY_UID    3
+#define NEXT_GLUE_DOWM_RELAY_UID  4
 
-void relay_response(int64_t accumulative)
+#define PREV_GLUE_UP_STORE_UID    1
+#define PREV_GLUE_DOWM_STORE_UID  2
+#define NEXT_GLUE_UP_STORE_UID    3
+#define NEXT_GLUE_DOWM_STORE_UID  4
+void relay_response(int64_t accumulative, int32_t cyc_ms)
 {
-
+    static int32_t ms1 = 0;
+    static int32_t ms2 = 0;
+    static int32_t ms3 = 0;
+    static int32_t ms4 = 0;
+    static int64_t accumulative_prev;
+    if(accumulative == 0) return;
+    if(accumulative_prev != accumulative)
+    {
+        if(accumulative%channel_num_p->store_n[PREV_GLUE_UP_STORE_UID] == 0)
+        {
+            ms1 += prev_glue_up.store*1000+cyc_ms;
+        }
+        if(accumulative%channel_num_p->store_n[PREV_GLUE_DOWM_STORE_UID] == 0)
+        {
+            ms2 += prev_glue_dowm.store*1000+cyc_ms;
+        }
+        if(accumulative%channel_num_p->store_n[NEXT_GLUE_UP_STORE_UID] == 0)
+        {
+            ms3 += next_glue_up.store*1000+cyc_ms;
+        }
+        if(accumulative%channel_num_p->store_n[NEXT_GLUE_DOWM_STORE_UID] == 0)
+        {
+            ms4 += next_glue_dowm.store*1000+cyc_ms;
+        }    
+    }
+    if(ms1 > 1)
+    {
+        ms1 -= cyc_ms;
+        relay_lever(PREV_GLUE_UP_RELAY_UID, SET);
+    }else{
+        relay_lever(PREV_GLUE_UP_RELAY_UID, RESET);
+    }
+    if(ms2 > 1)
+    {
+        ms2 -= cyc_ms;
+        relay_lever(PREV_GLUE_UP_RELAY_UID, SET);
+    }else{
+        relay_lever(PREV_GLUE_UP_RELAY_UID, RESET);
+    }
+    if(ms3 > 1)
+    {
+        ms3 -= cyc_ms;
+        relay_lever(PREV_GLUE_UP_RELAY_UID, SET);
+    }else{
+        relay_lever(PREV_GLUE_UP_RELAY_UID, RESET);
+    }
+    if(ms4 > 1)
+    {
+        ms4 -= cyc_ms;
+        relay_lever(PREV_GLUE_UP_RELAY_UID, SET);
+    }else{
+        relay_lever(PREV_GLUE_UP_RELAY_UID, RESET);
+    }
+    accumulative_prev = accumulative;
 }
