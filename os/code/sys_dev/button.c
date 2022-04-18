@@ -10,7 +10,11 @@
 #include "button.h"
 #include "main.h"
 #include "disp.h"
-
+static uint8_t switch_code;
+void set_switch_code(uint8_t code)
+{
+  switch_code = code;
+}
 static uint32_t matrix_code;
 void set_matrix_button_code(uint64_t code)
 {
@@ -146,6 +150,7 @@ void SW_OFF_Down_CallBack(void *btn)
         break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
+      case STA_EDIT_REAR:
           sta = STA_NORMAL;
           syn_link_par_store2disp();
           disp_all_link();
@@ -192,9 +197,9 @@ void SW_TYPLE_Down_CallBack(void *btn)
       default:
         break;
       case STA_TIME:
-          if(out_button_stack() == STA_OFF) {
-            sta = STA_CLEAR_TIME;
-          }
+          // if(out_button_stack() == STA_OFF) {
+          //   sta = STA_CLEAR_TIME;
+          // }
           break;
       case STA_NORMAL:
         sta = STA_COMPENSATION;
@@ -226,24 +231,29 @@ void SW_STEP_Down_CallBack(void *btn)
           break;
   }
 }
+/******************************************
+ * @description: 
+ * @param {void} *btn
+ * @return {*}
+******************************************/
 void SW_DEL_Down_CallBack(void *btn)
 {
   switch (sta)
   {
       default:
+        break;
       case STA_NORMAL:
-        sta = STA_EDIT_CLEAR_TIME;
-        set_link_head(&accum_yield);
-        add_link_node(&cur_yield_rear);
-        add_link_node(&next_glue_up);
-        add_link_node(&next_glue_dowm);
-        cover_disp_permission(TRUE);
-        cover_link_par_flash(FLASH_NULL);
-        accum_yield.flash  = FLASH_ALL;        
+          sta = STA_EDIT_REAR;
+          set_link_head(&cur_yield_rear);
+          add_link_node(&next_glue_up);
+          add_link_node(&next_glue_dowm);
+          cover_link_par_flash(FLASH_NULL);
+          cur_yield_rear.flash  = FLASH_ALL;      
         break;
       case STA_EDIT_CLEAR_TIME:
       case STA_COMPENSATION:
       case STA_EDIT:
+      case STA_EDIT_REAR:
           cur_p->disp = 0;
           break;
   }
@@ -262,6 +272,7 @@ void SW_F1_Down_CallBack(void *btn)
       case STA_COMPENSATION:
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
+      case STA_EDIT_REAR:
           cur_p->flash = FLASH_NULL;
           cur_p = cur_p->prev;
           cur_p->flash = FLASH_ALL;
@@ -281,7 +292,7 @@ void SW_TIME_Down_CallBack(void *btn)
         break;
       case STA_OFF: 
         sta = STA_TIME;
-        in_button_stack(STA_OFF);
+        //in_button_stack(STA_OFF);
         set_link_head(&time);
         cover_link_par_flash(FLASH_NULL);
         cur_p->flash  = 12;
@@ -330,6 +341,7 @@ void SW_OK_Down_CallBack(void *btn)
       case STA_EDIT_CLEAR_TIME:
       case STA_COMPENSATION:
       case STA_EDIT:
+      case STA_EDIT_REAR:
           syn_link_par_disp2store();
           write_store();
           sta = STA_NORMAL;
@@ -384,6 +396,7 @@ void SW_N0_Down_CallBack(void *btn)
         break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
+      case STA_EDIT_REAR:
           cur_p->disp = cur_p->disp *10;
           if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
           break;
@@ -410,6 +423,7 @@ void SW_F4_Down_CallBack(void *btn)
       case STA_COMPENSATION:
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
+      case STA_EDIT_REAR:
           cur_p->flash = FLASH_NULL;
           cur_p = cur_p->next;
           cur_p->flash = FLASH_ALL;
@@ -432,6 +446,7 @@ void SW_N1_Down_CallBack(void *btn)
         break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
+      case STA_EDIT_REAR:
           cur_p->disp = cur_p->disp*10+1;
           if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
           break;
@@ -457,6 +472,7 @@ void SW_N2_Down_CallBack(void *btn)
         break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
+      case STA_EDIT_REAR:
           cur_p->disp = cur_p->disp*10+2;
           if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
           break;
@@ -482,6 +498,7 @@ void SW_N3_Down_CallBack(void *btn)
         break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
+      case STA_EDIT_REAR:
           cur_p->disp = cur_p->disp*10+3;
           if(cur_p->disp>99)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
           break;
@@ -507,6 +524,7 @@ void SW_N4_Down_CallBack(void *btn)
         break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
+      case STA_EDIT_REAR:
           cur_p->disp = cur_p->disp*10+4;
           if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
           break;
@@ -532,6 +550,7 @@ void SW_N5_Down_CallBack(void *btn)
         break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
+      case STA_EDIT_REAR:
           cur_p->disp = cur_p->disp*10+5;
           if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
           break;
@@ -557,6 +576,7 @@ void SW_N6_Down_CallBack(void *btn)
         break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
+      case STA_EDIT_REAR:
           cur_p->disp = cur_p->disp*10+6;
           if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
           break;
@@ -582,6 +602,7 @@ void SW_N7_Down_CallBack(void *btn)
         break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
+      case STA_EDIT_REAR:
           cur_p->disp = cur_p->disp*10+7;
           if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
           break;
@@ -607,6 +628,7 @@ void SW_N8_Down_CallBack(void *btn)
         break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
+      case STA_EDIT_REAR:
           cur_p->disp = cur_p->disp*10+8;
           if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
           break;
@@ -632,6 +654,7 @@ void SW_N9_Down_CallBack(void *btn)
         break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
+      case STA_EDIT_REAR:
           cur_p->disp = cur_p->disp*10+9;
           if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
           break;

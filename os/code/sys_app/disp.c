@@ -354,12 +354,6 @@ void send_num(uint8_t num, boolean_t dot)
     (dot==TRUE)?(code&=SEG_DP):(code|=SEG_NDP);
     hc595_send2register(code);
 }
-/******************************************
- * @description: 
- * @param {uint8_t} num
- * @param {boolean_t} dot
- * @return {*}
-******************************************/
 void send_reverse_num(uint8_t num, boolean_t dot)
 {
     uint8_t code;
@@ -380,6 +374,46 @@ void send_reverse_num(uint8_t num, boolean_t dot)
     (dot==TRUE)?(code&=SEG_DP):(code|=SEG_NDP);
     hc595_send2register(code);
 }
+void send_num2(uint8_t num, boolean_t dot)
+{
+    uint8_t code;
+    switch (num)
+    {
+        case 0: code=SMG_N0;break;
+        case 1: code=SMG_N1;break;
+        case 2: code=SMG_N2;break;
+        case 3: code=SMG_N3;break;
+        case 4: code=SMG_N4;break;
+        case 5: code=SMG_N5;break;
+        case 6: code=SMG_N6;break;
+        case 7: code=SMG_N7;break;    
+        case 8: code=SMG_N8;break;  
+        case 9: code=SMG_N9;break;  
+        default:break;
+    }
+    (dot==TRUE)?(code&=SEG_DP):(code|=SEG_NDP);
+    hc595_2_send2register(code);
+}
+void send_reverse_num2(uint8_t num, boolean_t dot)
+{
+    uint8_t code;
+    switch (num)
+    {
+        case 0: code=SMG_RN0;break;
+        case 1: code=SMG_RN1;break;
+        case 2: code=SMG_RN2;break;
+        case 3: code=SMG_RN3;break;
+        case 4: code=SMG_RN4;break;
+        case 5: code=SMG_RN5;break;
+        case 6: code=SMG_RN6;break;
+        case 7: code=SMG_RN7;break;    
+        case 8: code=SMG_RN8;break;  
+        case 9: code=SMG_RN9;break;  
+        default:break;
+    }
+    (dot==TRUE)?(code&=SEG_DP):(code|=SEG_NDP);
+    hc595_2_send2register(code);
+}
 /******************************************
  * @description: 
  * @param {uint8_t} num
@@ -388,6 +422,10 @@ void send_reverse_num(uint8_t num, boolean_t dot)
 void send_null(uint8_t num)
 {
     send_char(' ', NDP,num);
+}
+void send_null2(uint8_t num)
+{
+    send_char2(' ', NDP,num);
 }
 /****************************************** 
  * @description: 
@@ -405,12 +443,6 @@ void send_char(uint8_t one_char, boolean_t dot, uint8_t num)
     uint8_t i;
     for(i=0; i<num; i++) hc595_send2register(code);
 }
-/******************************************
- * @description: 
- * @param {uint8_t} one_char
- * @param {uint8_t} num
- * @return {*}
-******************************************/
 void send_reverse_char(uint8_t one_char, boolean_t dot, uint8_t num)
 {
     uint8_t code;
@@ -419,6 +451,25 @@ void send_reverse_char(uint8_t one_char, boolean_t dot, uint8_t num)
     (dot==TRUE)?(code&=SEG_DP):(code|=SEG_NDP);
     uint8_t i;
     for(i=0; i<num; i++) hc595_send2register(code);
+}
+void send_char2(uint8_t one_char, boolean_t dot, uint8_t num)
+{
+    uint8_t code;
+    if(one_char == ' ')code=SMG_SPACK;
+    if(one_char == '_')code=SMG_C_;
+    if(one_char == '-')code=SMG_SINGLE;
+    (dot==TRUE)?(code&=SEG_DP):(code|=SEG_NDP);
+    uint8_t i;
+    for(i=0; i<num; i++) hc595_2_send2register(code);
+}
+void send_reverse_char2(uint8_t one_char, boolean_t dot, uint8_t num)
+{
+    uint8_t code;
+    if(one_char == ' ')code=SMG_SPACK;
+    if(one_char == '_')code=SMG_RC_;
+    (dot==TRUE)?(code&=SEG_DP):(code|=SEG_NDP);
+    uint8_t i;
+    for(i=0; i<num; i++) hc595_2_send2register(code);
 }
 /****************************************** 
  * @description: 
@@ -443,13 +494,6 @@ void num_deal(DATA_BIN_S* p, uint8_t position, uint8_t dot)
     else if(p->flash==position && flash.toggle==TRUE){send_char('_',dot,1);}
     else {send_num(num, dot);}
 }
-/******************************************
- * @description: 
- * @param {DATA_BIN_S*} p
- * @param {uint8_t} position
- * @param {uint8_t} dot
- * @return {*}
-******************************************/
 void num_reverse_deal(DATA_BIN_S* p, uint8_t position, uint8_t dot)
 {
     int64_t disp;
@@ -465,6 +509,38 @@ void num_reverse_deal(DATA_BIN_S* p, uint8_t position, uint8_t dot)
     if(p->flash==FLASH_ALL && flash.toggle == TRUE){send_reverse_char('_',dot,1);}
     else if(p->flash==position && flash.toggle==TRUE){send_reverse_char('_',dot,1);}
     else {send_reverse_num(num, dot);}
+}
+void num_deal2(DATA_BIN_S* p, uint8_t position, uint8_t dot)
+{
+    int64_t disp;
+    uint8_t i;
+    uint8_t num;
+    num = 0;
+    disp = p->disp;
+    for(i=1; i<position; i++)
+    {
+        disp = disp/10;
+    }
+    num = disp%10;
+    if(p->flash==FLASH_ALL && flash.toggle == TRUE){send_char2('_',dot,1);}
+    else if(p->flash==position && flash.toggle==TRUE){send_char2('_',dot,1);}
+    else {send_num2(num, dot);}
+}
+void num_reverse_deal2(DATA_BIN_S* p, uint8_t position, uint8_t dot)
+{
+    int64_t disp;
+    uint8_t i;
+    uint8_t num;
+    num = 0;
+    disp = p->disp;
+    for(i=1; i<position; i++)
+    {
+        disp = disp/10;
+    }
+    num = disp%10;
+    if(p->flash==FLASH_ALL && flash.toggle == TRUE){send_reverse_char2('_',dot,1);}
+    else if(p->flash==position && flash.toggle==TRUE){send_reverse_char2('_',dot,1);}
+    else {send_reverse_num2(num, dot);}
 }
 /******************************************
  * @description: 
@@ -492,42 +568,27 @@ void disp_refresh_task()
     uint8_t num;
     DATA_BIN_S* p;
     //clear cache
-    send_null(8);
-    p = &prev_glue_dowm;
- 	if(search_link(p))
-    { 
-        num_deal(p,1,NDP);
-        num_deal(p,2,NDP); 
- 	}else{
- 		send_null(2);     
- 	}
-    p = &prev_glue_up;
- 	if(search_link(p))
-    { 
-        num_reverse_deal(p,2,NDP);
-        num_reverse_deal(p,1,NDP); 
- 	}else{
- 		send_null(2);     
- 	}
+    send_null(2);
     //left to right
     p = &time;
  	if(search_link(p))
     { 
         //skip second
-        num_deal(p,3,NDP);
-        num_deal(p,4,NDP); 
-        num_deal(p,5,NDP);
-        num_deal(p,6,NDP);
-        num_deal(p,7,NDP);
-        num_deal(p,8,NDP);
-        num_deal(p,9,NDP);
-        num_deal(p,10,NDP);
-        num_deal(p,11,NDP);
-        num_deal(p,12,NDP);
-        num_deal(p,13,NDP);
-        num_deal(p,14,NDP);
+    //    num_deal2(p,3,NDP);
+    //    num_deal2(p,4,NDP); 
+    //    num_deal2(p,5,NDP);
+    //    num_deal2(p,6,NDP);
+       num_deal(p,7,NDP);
+       num_deal(p,8,NDP);
+       num_deal(p,9,NDP);
+       num_deal(p,10,NDP);
+       num_deal(p,11,NDP);
+       num_deal(p,12,NDP);
+       num_deal(p,13,NDP);
+       num_deal(p,14,NDP);
  	}else{
- 		send_null(12);     
+        // send_null2(4);
+ 		send_null(8);     
  	}
     p = &accum_yield;
  	if(search_link(p))
@@ -545,8 +606,12 @@ void disp_refresh_task()
     { 
 		num_deal(p,1,NDP);
 		num_deal(p,2,NDP);
- 	}else{
- 		send_null(2);     
+ 		num_deal(p,3,NDP);
+		num_deal(p,4,NDP);
+     }
+     else
+     {
+ 		send_null(4);     
  	}
     //random
     //order    2 1 3
@@ -585,4 +650,69 @@ void disp_refresh_task()
  		send_null(3);     
  	}
 	hc595_parallel_output();
+}
+/******************************************
+ * @description: 
+ * @param {*}
+ * @return {*}
+******************************************/
+void disp_refresh_task_2()
+{
+    uint8_t num;
+    DATA_BIN_S* p;
+    //clear cache
+    send_null2(2);
+    p = &cur_yield_rear;
+    if(search_link(p))
+    { 
+       num_deal2(p,1,NDP);
+       num_deal2(p,2,NDP); 
+	}else{
+		send_null2(2);     
+	}
+    p = &next_glue_up;
+    if(search_link(p))
+    { 
+       num_deal2(p,1,NDP);
+       num_deal2(p,2,NDP); 
+	}else{
+		send_null2(2);     
+	}
+    p = &next_glue_dowm;
+    if(search_link(p))
+    { 
+       num_deal2(p,1,NDP);
+       num_deal2(p,2,NDP); 
+	}else{
+		send_null2(2);     
+	}
+    p = &prev_glue_dowm;
+    if(search_link(p))
+    { 
+       num_deal2(p,1,NDP);
+       num_deal2(p,2,NDP); 
+	}else{
+		send_null2(2);     
+	}
+   p = &prev_glue_up;
+	if(search_link(p))
+   { 
+       num_deal2(p,2,NDP);
+       num_deal2(p,1,NDP); 
+	}else{
+		send_null2(2);     
+	}
+    //left to right
+    p = &time;
+ 	if(search_link(p))
+    { 
+        //skip second
+       num_deal2(p,3,NDP);
+       num_deal2(p,4,NDP); 
+       num_deal2(p,5,NDP);
+       num_deal2(p,6,NDP);
+ 	}else{
+        send_null2(4);  
+ 	}
+	hc595_2_parallel_output();
 }

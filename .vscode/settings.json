@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "gd32f30x.h": "c",
+        "relay_24v.h": "c"
+    }
+}

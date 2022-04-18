@@ -44,8 +44,12 @@ static void dhtc12_task(void* pvParameters);
 static TaskHandle_t nixie_tube_task_handle = NULL;
 static void nixie_tube_task(void* pvParameters);
 
+static TaskHandle_t nixie_tube_task_handle_2 = NULL;
+static void nixie_tube_task_2(void* pvParameters);
+
 static TaskHandle_t peripheral_task_handle = NULL;
 static void peripheral_task(void* pvParameters);
+
 
 int main()
 {
@@ -99,6 +103,12 @@ static void AppTaskCreate(void)
                         (void*          )NULL,	/* 任务入口函数参数 */
                         (UBaseType_t    )3,	    /* 任务的优先级 */
                         (TaskHandle_t*  )&nixie_tube_task_handle);/* 任务控制块指针 */
+ xReturn = xTaskCreate((TaskFunction_t )nixie_tube_task_2, /* 任务入口函数 */
+                        (const char*    )"nixie_tube_task_2",/* 任务名字 */
+                        (uint16_t       )128,   /* 任务栈大小 */
+                        (void*          )NULL,	/* 任务入口函数参数 */
+                        (UBaseType_t    )3,	    /* 任务的优先级 */
+                        (TaskHandle_t*  )&nixie_tube_task_handle_2);/* 任务控制块指针 */
  xReturn = xTaskCreate((TaskFunction_t )peripheral_task, /* 任务入口函数 */
                         (const char*    )"peripheral_task",/* 任务名字 */
                         (uint16_t       )128,   /* 任务栈大小 */
@@ -117,10 +127,12 @@ static void AppTaskCreate(void)
 ******************************************/
 static void button_task(void* pvParameters)
 {
+  uint16_t cyc_ms = BUTTON_CYCE;
   static portTickType PreviousWakeTime; 
-  const portTickType TimeIncrement = pdMS_TO_TICKS(BUTTON_CYCE); 
+  const portTickType TimeIncrement = pdMS_TO_TICKS(cyc_ms); 
   PreviousWakeTime = xTaskGetTickCount(); 
   int32_t key;
+  uint8_t sw;
   uint8_t i;
   while(1)
   {
@@ -132,6 +144,8 @@ static void button_task(void* pvParameters)
         key = remote_scan();
       }
       set_matrix_button_code(key);
+      sw = switch_scan();
+      set_switch_code(sw);
       Button_Process();
       if(key != -1)
       {
@@ -139,18 +153,20 @@ static void button_task(void* pvParameters)
           if(i>5)
           {
             PRINT("key:0x%x,0x%x,0x%x\n",get_remote_code(),get_remote1_code(),key);
+            
             i=0;
           }
       }else{
         i = 0;
       }
+			//PRINT("sw:0x%x \n",sw);
       //peripheral
-      static uint16_t cyc_ms = BUTTON_CYCE;
       flash.ms += cyc_ms;
-      if(flash.ms > flash.ms_max && flash.disp_doing == FALSE)
+      //if(flash.ms > flash.ms_max && flash.disp_doing == FALSE)
+			if(flash.ms > flash.ms_max)
       {
+				flash.ms =0;
         (flash.toggle)?(flash.toggle=0):(flash.toggle=1);
-				flash.ms=0;
       }
   }
 }
@@ -194,7 +210,7 @@ static void dhtc12_task(void* pvParameters)
 static void nixie_tube_task(void* pvParameters)
 {
   static portTickType PreviousWakeTime; 
-  const portTickType TimeIncrement = pdMS_TO_TICKS(200); 
+  const portTickType TimeIncrement = pdMS_TO_TICKS(100); 
   PreviousWakeTime = xTaskGetTickCount();
   //display
   uint8_t i;
@@ -202,13 +218,34 @@ static void nixie_tube_task(void* pvParameters)
   {
     send_num(8, TRUE); 
   }
-    hc595_parallel_output();
-  //vTaskDelay(pdMS_TO_TICKS(5000));
+  hc595_parallel_output();
+	vTaskDelay(pdMS_TO_TICKS(2000));
   while(1)
   {
     vTaskDelayUntil(&PreviousWakeTime,TimeIncrement);    
     flash.disp_doing = TRUE;
     disp_refresh_task();
+    flash.disp_doing = FALSE;
+  }
+}
+static void nixie_tube_task_2(void* pvParameters)
+{
+  static portTickType PreviousWakeTime; 
+  const portTickType TimeIncrement = pdMS_TO_TICKS(100); 
+  PreviousWakeTime = xTaskGetTickCount();
+  //display
+  uint8_t i;
+  for (i=0; i<34; i++)
+  {
+    send_num2(8, TRUE); 
+  }
+  hc595_2_parallel_output();
+	vTaskDelay(pdMS_TO_TICKS(2000));
+  while(1)
+  {
+    vTaskDelayUntil(&PreviousWakeTime,TimeIncrement);    
+    flash.disp_doing = TRUE;
+    disp_refresh_task_2();
     flash.disp_doing = FALSE;
   }
 }

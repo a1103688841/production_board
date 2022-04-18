@@ -201,6 +201,7 @@ BUTTON_EXT SW_RECORDFIFO_S sw_record;
 /* ------------------------------------------- funtion ----------------------------------------- */
 
 
+extern void set_switch_code(uint8_t code);
 
 /* externs */
 extern void Add_Button (Button_t* btn);
