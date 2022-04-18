@@ -126,11 +126,11 @@ static uint8_t Read_SW_STOP_Level(void)
 }
 static uint8_t Read_SW_CLR_Level(void)
 {
-  if(switch_code == 0x01){return HIGHT;}else{return FALSE;}
+  if(switch_code == 0x02){return HIGHT;}else{return FALSE;}
 }
 static uint8_t Read_SW_ADD_Level(void)
 {
-  if(switch_code == 0x02){return HIGHT;}else{return FALSE;}
+  if(switch_code == 0x01){return HIGHT;}else{return FALSE;}
 }
 /**************************************************************************************************
 *                                 SW call back

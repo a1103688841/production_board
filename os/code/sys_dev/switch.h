@@ -1,7 +1,7 @@
 /******************************************
  * @Author: rnf
  * @Date: 2022-04-17 16:03:58
- * @LastEditTime: 2022-04-17 16:15:49
+ * @LastEditTime: 2022-04-19 00:08:28
  * @LastEditors: rnf
  * @Description: 
  * @FilePath: \production_board\os\code\sys_dev\switch.h
@@ -11,6 +11,6 @@
 #define _SWITCH_H_
 
 void switch_init();
-uint8_t switch_scan();
+uint8_t switch_scan(int16_t cyc_ms);
 
 #endif 

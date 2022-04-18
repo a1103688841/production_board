@@ -144,7 +144,7 @@ static void button_task(void* pvParameters)
         key = remote_scan();
       }
       set_matrix_button_code(key);
-      sw = switch_scan();
+      sw = switch_scan(cyc_ms);
       set_switch_code(sw);
       Button_Process();
       if(key != -1)

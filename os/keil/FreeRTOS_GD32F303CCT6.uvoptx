@@ -148,9 +148,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>35</LineNumber>
+          <LineNumber>48</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134241864</Address>
+          <Address>134245396</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -159,14 +159,14 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>..\code\sys_dev\switch.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\GD32F303\../code/sys_dev/switch.c\35</Expression>
+          <Expression>\\GD32F303\../code/sys_dev/switch.c\48</Expression>
         </Bp>
         <Bp>
           <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>39</LineNumber>
+          <LineNumber>40</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134241878</Address>
+          <Address>134245362</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -175,7 +175,7 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>..\code\sys_dev\switch.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\GD32F303\../code/sys_dev/switch.c\39</Expression>
+          <Expression>\\GD32F303\../code/sys_dev/switch.c\40</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -263,6 +263,21 @@
           <count>16</count>
           <WinNumber>1</WinNumber>
           <ItemText>tem.disp,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>17</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>channel_num_p-&gt;store_n</ItemText>
+        </Ww>
+        <Ww>
+          <count>18</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>ms1</ItemText>
+        </Ww>
+        <Ww>
+          <count>19</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>cyc_ms</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
