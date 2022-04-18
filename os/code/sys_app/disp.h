@@ -18,22 +18,24 @@
 #define NDP 0
 #define DP  1
 
-
+#define SERIAL_MAX (6+1)
 typedef struct data_bin_s
 {
-    int8_t permission;
-    int8_t flash; //INT8_MAX 全闪  0是不闪
-     int64_t compensation;
+    int8_t flash;           //INT8_MAX is all flash  0 is no flash
     //display
-    int64_t disp;
+    int64_t disp;       
+    int64_t disp_n[SERIAL_MAX];
+    int8_t  serial_max;     //array idex
     //peripheral refresh
     int64_t data;
     //store
-    int64_t store;
-    int8_t  single;
-    //fix
-    int8_t  position_max;
-    int64_t data_max;
+    int64_t store;      //主要存储值
+    int8_t  single;     //正负
+    int64_t store_n[SERIAL_MAX];            
+    //limit data
+    int8_t  position_max;   //最多几位
+    int64_t disp_max;       //数据最大显示多少
+    //link node 
     struct data_bin_s* next;
     struct data_bin_s* prev;
 }DATA_BIN_S;
@@ -99,6 +101,8 @@ typedef struct stack_s
 
 extern struct data_bin_s* head_p;
 extern struct data_bin_s* cur_p;
+extern struct data_bin_s* serial_p;
+extern struct data_bin_s* serial_data_p;
 extern struct data_bin_s time;
 extern struct data_bin_s accum_yield;
 extern struct data_bin_s prev_glue_up;

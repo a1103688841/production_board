@@ -4,7 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:/Keil_v5/ARM/ARMCC/include/**"
+                "C:/Keil_v5/ARM/ARMCC/include/*"
             ],
             "defines": [
                 "_DEBUG",

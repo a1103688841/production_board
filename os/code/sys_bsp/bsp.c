@@ -1,7 +1,7 @@
 /******************************************
  * @Author: rnf
  * @Date: 2022-04-05 19:19:44
- * @LastEditTime: 2022-04-17 16:08:55
+ * @LastEditTime: 2022-04-18 21:23:28
  * @LastEditors: rnf
  * @Description: 
  * @FilePath: \production_board\os\code\sys_bsp\bsp.c
@@ -53,11 +53,15 @@ void bsp_init()
 	buttonAttachInit();
 
 	rtc_init();
+	
 	relay_init();
+	
 	switch_init();
+	
 	hc595_init();
 	hc595_2_init();
 	disp_read_store();
+    link_parameter_init();
 
 	flash.toggle=0;
 	flash.ms=0;

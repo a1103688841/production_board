@@ -1,6 +1,13 @@
 {
     "files.associations": {
         "gd32f30x.h": "c",
-        "relay_24v.h": "c"
-    }
+        "relay_24v.h": "c",
+        "button.h": "c",
+        "main.h": "c",
+        "base_typle.h": "c",
+        "float.h": "c",
+        "stdlib.h": "c",
+        "stdint.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
 }

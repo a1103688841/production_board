@@ -1,3 +1,12 @@
+/******************************************
+ * @Author: rnf
+ * @Date: 2022-04-17 15:32:34
+ * @LastEditTime: 2022-04-18 22:29:23
+ * @LastEditors: rnf
+ * @Description: 
+ * @FilePath: \production_board\os\code\sys_dev\relay_24v.c
+ * @rnf wrote this code
+******************************************/
 #include "base_typle.h"
 #include "relay_24v.h"
 #include "gd32f30x.h"
@@ -77,4 +86,9 @@ void relay_lever(uint8_t uid, uint8_t lever)
             gpio_bit_reset(RELAY4_PORT, RELAY4_PIN);
         }        
     }
+}
+
+void relay_response(int64_t accumulative)
+{
+
 }

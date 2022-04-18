@@ -13,8 +13,10 @@
 #include "main.h"
 
 //point
-struct data_bin_s* cur_p;
 struct data_bin_s* head_p;
+struct data_bin_s* cur_p;
+struct data_bin_s* serial_p;
+struct data_bin_s* serial_data_p;
 //data bin
 struct data_bin_s time;
 struct data_bin_s accum_yield;
@@ -49,6 +51,11 @@ void set_link_head(DATA_BIN_S* head)
     head->prev = head;
     cur_p  = head_p;
 }
+/******************************************
+ * @description: 
+ * @param {DATA_BIN_S*} add
+ * @return {*}
+******************************************/
 void add_link_node(DATA_BIN_S* add)
 {
     DATA_BIN_S* p, *p_prev;
@@ -86,7 +93,6 @@ void disp_var_init()
     add_link_node(&next_glue_up);
     add_link_node(&next_glue_dowm);
     add_link_node(&bank);
-    cover_disp_permission(TRUE);
     cover_link_par_flash(FLASH_NULL);
     disp_read_store();
     syn_link_par_disp2store();
@@ -121,10 +127,10 @@ void set_node_posintion_max(DATA_BIN_S* p, uint8_t max)
 {
     uint8_t i;
     p->position_max = max;
-    p->data_max     = 0;
+    p->disp_max     = 0;
     for(i=0; i<max; i++)
     {
-        p->data_max = p->data_max*10+9;
+        p->disp_max = p->disp_max*10+9;
     }
 }
 /******************************************
@@ -145,6 +151,18 @@ void link_parameter_init()
     set_node_posintion_max(&next_glue_up, 2);
     set_node_posintion_max(&next_glue_dowm, 2);
     set_node_posintion_max(&bank, 2);
+
+    accum_yield.disp = 0;
+    accum_yield.data = 0;
+    accum_yield.store = 0;
+    cur_yield_front.disp = 0;
+    cur_yield_front.data = 0;
+    cur_yield_front.store = 0;
+    cur_yield_rear.disp = 0;
+    cur_yield_rear.data = 0;
+    cur_yield_rear.store = 0;
+
+    disp_all_link();
     cover_link_par_flash(FLASH_NULL);
 }
 /******************************************
@@ -166,11 +184,11 @@ void link_parameter_first()
     set_node_posintion_max(&next_glue_up, 2);
     set_node_posintion_max(&next_glue_dowm, 2);
     set_node_posintion_max(&bank, 2);
-    accum_yield.disp = 9999;
-    prev_glue_up.disp = 9;
-    prev_glue_dowm.disp = 9;
-    next_glue_up.disp = 9;
-    next_glue_dowm.disp = 9;
+    accum_yield.disp = 0;
+    prev_glue_up.disp = 0;
+    prev_glue_dowm.disp = 0;
+    next_glue_up.disp = 0;
+    next_glue_dowm.disp = 0;
     cur_yield_front.disp = 0;
     cur_yield_rear.disp = 0;
     tem.disp = 0;
@@ -198,8 +216,9 @@ void link_parameter_first()
 void syn_link_par_disp2store()
 {
     DATA_BIN_S* p;
-    uint8_t i=0;
+    uint8_t i;
     p = head_p;
+    i = 0;
     do
     {
         p->store = p->disp;
@@ -215,8 +234,9 @@ void syn_link_par_disp2store()
 void syn_link_par_data2disp()
 {
     DATA_BIN_S* p;
-    uint8_t i=0;
+    uint8_t i, s_i;
     p = head_p;
+    i = 0;
     do
     {
         p->disp = p->data;
@@ -232,14 +252,36 @@ void syn_link_par_data2disp()
 void syn_link_par_store2disp()
 {
     DATA_BIN_S* p;
-    uint8_t i=0;
+    uint8_t i;
     p = head_p;
+    i = 0;
     do
     {
         p->disp = p->store;
         p = p->next;
         i++;
     }while(p!=head_p && i<100);
+}
+/******************************************
+ * @description: 
+ * @param {*}
+ * @return {*}
+******************************************/
+void syn_node_serial_disp2store(DATA_BIN_S* p)
+{
+    uint8_t i;
+    for(i=0; i<SERIAL_MAX; i++)
+    {
+        p->store_n[i] = p->disp_n[i];
+    }
+}
+void syn_node_serial_store2disp(DATA_BIN_S* p)
+{
+    uint8_t i;
+    for(i=0; i<SERIAL_MAX; i++)
+    {
+        p->disp_n[i] = p->store_n[i];
+    }
 }
 /******************************************
  * @description: 
@@ -260,18 +302,6 @@ uint8_t search_link(DATA_BIN_S* data)
     }while(p!=head_p && i<100);
     return FALSE;
 }
-void cover_disp_permission(int8_t permission)
-{
-    DATA_BIN_S* p;
-    uint8_t i=0;
-    p = head_p;
-    do
-    {
-        p->permission = permission;
-        p = p->next;
-        i++;
-    }while(p!=head_p && i<100);
-} 
 /******************************************
  * @description: 
  * @param {int8_t} flash
@@ -594,7 +624,12 @@ void disp_refresh_task()
  	if(search_link(p))
     { 
 		num_reverse_deal(p,4,NDP);
-		num_reverse_deal(p,3,NDP);
+		if(sta == STA_OPTO_SWITCH)
+        {
+            num_reverse_deal(p,3,DP);
+        }else{
+            num_reverse_deal(p,3,NDP);
+        }
         num_reverse_deal(p,2,NDP);
         num_reverse_deal(p,1,NDP);
  	}else{

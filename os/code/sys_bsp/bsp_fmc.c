@@ -86,8 +86,6 @@ void disp_read_store()
     memcpy(&next_glue_up, &store.data.next_glue_up, sizeof(DATA_BIN_S));
     memcpy(&next_glue_dowm, &store.data.next_glue_dowm, sizeof(DATA_BIN_S));
     memcpy(&bank, &store.data.bank, sizeof(DATA_BIN_S));
-    disp_all_link();
-    link_parameter_init();
 }
 /******************************************
  * @description: 

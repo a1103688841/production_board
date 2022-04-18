@@ -8,6 +8,7 @@
 #define __BUTTON_C__
 /* ------------------------------------------- include ----------------------------------------- */
 #include "button.h"
+#include "base_typle.h"
 #include "main.h"
 #include "disp.h"
 static uint8_t switch_code;
@@ -148,6 +149,8 @@ void SW_OFF_Down_CallBack(void *btn)
         disp_all_link();
         cover_link_par_flash(FLASH_NULL);
         break;
+      case STA_OPTO_SWITCH:
+      case STA_CHANNEL_NUM:
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
       case STA_EDIT_REAR:
@@ -211,23 +214,53 @@ void SW_TYPLE_Down_CallBack(void *btn)
         break;
   }
 }
+/******************************************
+ * @description: 
+ * @param {void} *btn
+ * @return {*}
+******************************************/
 void SW_METER_Down_CallBack(void *btn)
 {
-  switch (0)
+  switch (sta)
   {
       default:
-      case 0:
-          buttonStaInit(btn);
+        break;
+      case STA_NORMAL:
+          sta = STA_CHANNEL_NUM;
+          set_link_head(&cur_yield_rear);
+          add_link_node(&next_glue_up);
+          cover_link_par_flash(FLASH_NULL);
+          cur_yield_rear.flash  = FLASH_ALL;   
+          serial_p = &next_glue_up;
+          serial_data_p = &cur_yield_rear;
+          next_glue_up.disp = 1;  
+          next_glue_up.serial_max = 4;
+          cur_yield_rear.disp = cur_yield_rear.store_n[next_glue_up.disp];
           break;
   }
 }
+/******************************************
+ * @description: 
+ * @param {void} *btn
+ * @return {*}
+******************************************/
 void SW_STEP_Down_CallBack(void *btn)
 {
-  switch (0)
+  switch (sta)
   {
       default:
-      case 0:
-          buttonStaInit(btn);
+        break;
+      case STA_NORMAL:
+          sta = STA_OPTO_SWITCH;
+          set_link_head(&accum_yield);
+          add_link_node(&cur_yield_front);
+          cover_link_par_flash(FLASH_NULL);
+          accum_yield.flash  = FLASH_ALL;   
+          cur_yield_front.disp = 1;  
+          cur_yield_front.serial_max = 3;
+          serial_p = &cur_yield_front;
+          serial_data_p = &accum_yield;
+          serial_data_p->disp = serial_data_p->store_n[serial_p->disp];
           break;
   }
 }
@@ -256,6 +289,11 @@ void SW_DEL_Down_CallBack(void *btn)
       case STA_EDIT_REAR:
           cur_p->disp = 0;
           break;
+      case STA_OPTO_SWITCH:
+      case STA_CHANNEL_NUM:
+        serial_data_p->disp_n[serial_p->disp] = 0;
+        serial_data_p->disp = serial_data_p->disp_n[serial_p->disp];
+        break;
   }
 }
 /******************************************
@@ -269,6 +307,12 @@ void SW_F1_Down_CallBack(void *btn)
   {
       default:
         break;
+      case STA_OPTO_SWITCH:
+      case STA_CHANNEL_NUM:
+          serial_p->disp --;
+          if(serial_p->disp<1){serial_p->disp=1;}
+          serial_data_p->disp = serial_data_p->disp_n[serial_p->disp];
+          break;
       case STA_COMPENSATION:
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
@@ -300,7 +344,6 @@ void SW_TIME_Down_CallBack(void *btn)
       case STA_NORMAL:
           sta = STA_TIME;
           set_link_head(&time);
-          cover_disp_permission(TRUE);
           cover_link_par_flash(FLASH_NULL);
           cur_p->flash  = 12;
           break;
@@ -333,10 +376,20 @@ void SW_F2_Down_CallBack(void *btn)
 ******************************************/
 void SW_OK_Down_CallBack(void *btn)
 {
+  uint8_t i;
   switch (sta)
   {
       default:
         break;
+      case STA_OPTO_SWITCH:
+      case STA_CHANNEL_NUM:
+          syn_node_serial_disp2store(serial_data_p);
+          write_store();
+          syn_link_par_store2disp();
+          sta = STA_NORMAL;
+          disp_all_link();
+          cover_link_par_flash(FLASH_NULL);
+          break;
       case STA_DATA_RST:
       case STA_EDIT_CLEAR_TIME:
       case STA_COMPENSATION:
@@ -394,11 +447,20 @@ void SW_N0_Down_CallBack(void *btn)
   {
       default:
         break;
+      case STA_OPTO_SWITCH:
+      case STA_CHANNEL_NUM:
+          serial_data_p->disp_n[serial_p->disp] = serial_data_p->disp_n[serial_p->disp] *10;
+          if(serial_data_p->disp_n[serial_p->disp] > serial_data_p->disp_max)
+          {
+            serial_data_p->disp_n[serial_p->disp] = serial_data_p->disp_n[serial_p->disp]%(serial_data_p->disp_max+1);
+          }
+          serial_data_p->disp = serial_data_p->disp_n[serial_p->disp];
+          break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
       case STA_EDIT_REAR:
           cur_p->disp = cur_p->disp *10;
-          if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
+          if(cur_p->disp>cur_p->disp_max)cur_p->disp=cur_p->disp%(cur_p->disp_max+1);
           break;
       case STA_COMPENSATION:
           cur_p->disp = cur_p->disp *10;
@@ -420,6 +482,12 @@ void SW_F4_Down_CallBack(void *btn)
   {
       default:
         break;
+      case STA_OPTO_SWITCH:
+      case STA_CHANNEL_NUM:
+          serial_p->disp ++;
+          if(serial_p->disp > serial_p->serial_max){serial_p->disp=serial_p->serial_max;}
+          serial_data_p->disp = serial_data_p->disp_n[serial_p->disp];
+          break;
       case STA_COMPENSATION:
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
@@ -444,11 +512,20 @@ void SW_N1_Down_CallBack(void *btn)
   {
       default:
         break;
+      case STA_OPTO_SWITCH:
+      case STA_CHANNEL_NUM:
+          serial_data_p->disp_n[serial_p->disp] = serial_data_p->disp_n[serial_p->disp] *10+1;
+          if(serial_data_p->disp_n[serial_p->disp] > serial_data_p->disp_max)
+          {
+            serial_data_p->disp_n[serial_p->disp] = serial_data_p->disp_n[serial_p->disp]%(serial_data_p->disp_max+1);
+          }
+          serial_data_p->disp = serial_data_p->disp_n[serial_p->disp];
+          break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
       case STA_EDIT_REAR:
           cur_p->disp = cur_p->disp*10+1;
-          if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
+          if(cur_p->disp>cur_p->disp_max)cur_p->disp=cur_p->disp%(cur_p->disp_max+1);
           break;
       case STA_COMPENSATION:
           cur_p->disp = cur_p->disp*10+1;
@@ -470,11 +547,20 @@ void SW_N2_Down_CallBack(void *btn)
   {
       default:
         break;
+      case STA_OPTO_SWITCH:
+      case STA_CHANNEL_NUM:
+          serial_data_p->disp_n[serial_p->disp] = serial_data_p->disp_n[serial_p->disp] *10+2;
+          if(serial_data_p->disp_n[serial_p->disp] > serial_data_p->disp_max)
+          {
+            serial_data_p->disp_n[serial_p->disp] = serial_data_p->disp_n[serial_p->disp]%(serial_data_p->disp_max+1);
+          }
+          serial_data_p->disp = serial_data_p->disp_n[serial_p->disp];
+          break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
       case STA_EDIT_REAR:
           cur_p->disp = cur_p->disp*10+2;
-          if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
+          if(cur_p->disp>cur_p->disp_max)cur_p->disp=cur_p->disp%(cur_p->disp_max+1);
           break;
       case STA_COMPENSATION:
           cur_p->disp = cur_p->disp*10+2;
@@ -496,15 +582,24 @@ void SW_N3_Down_CallBack(void *btn)
   {
       default:
         break;
+      case STA_OPTO_SWITCH:
+      case STA_CHANNEL_NUM:
+          serial_data_p->disp_n[serial_p->disp] = serial_data_p->disp_n[serial_p->disp] *10+3;
+          if(serial_data_p->disp_n[serial_p->disp] > serial_data_p->disp_max)
+          {
+            serial_data_p->disp_n[serial_p->disp] = serial_data_p->disp_n[serial_p->disp]%(serial_data_p->disp_max+1);
+          }
+          serial_data_p->disp = serial_data_p->disp_n[serial_p->disp];
+          break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
       case STA_EDIT_REAR:
           cur_p->disp = cur_p->disp*10+3;
-          if(cur_p->disp>99)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
+          if(cur_p->disp>99)cur_p->disp=cur_p->disp%(cur_p->disp_max+1);
           break;
       case STA_COMPENSATION:
           cur_p->disp = cur_p->disp*10+3;
-          if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(99+1);
+          if(cur_p->disp>cur_p->disp_max)cur_p->disp=cur_p->disp%(99+1);
           break;      
       case STA_TIME:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 3);
@@ -522,11 +617,20 @@ void SW_N4_Down_CallBack(void *btn)
   {
       default:
         break;
+      case STA_OPTO_SWITCH:
+      case STA_CHANNEL_NUM:
+          serial_data_p->disp_n[serial_p->disp] = serial_data_p->disp_n[serial_p->disp] *10+4;
+          if(serial_data_p->disp_n[serial_p->disp] > serial_data_p->disp_max)
+          {
+            serial_data_p->disp_n[serial_p->disp] = serial_data_p->disp_n[serial_p->disp]%(serial_data_p->disp_max+1);
+          }
+          serial_data_p->disp = serial_data_p->disp_n[serial_p->disp];
+          break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
       case STA_EDIT_REAR:
           cur_p->disp = cur_p->disp*10+4;
-          if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
+          if(cur_p->disp>cur_p->disp_max)cur_p->disp=cur_p->disp%(cur_p->disp_max+1);
           break;
       case STA_COMPENSATION:
           cur_p->disp = cur_p->disp*10+4;
@@ -548,11 +652,20 @@ void SW_N5_Down_CallBack(void *btn)
   {
       default:
         break;
+      case STA_OPTO_SWITCH:
+      case STA_CHANNEL_NUM:
+          serial_data_p->disp_n[serial_p->disp] = serial_data_p->disp_n[serial_p->disp] *10+5;
+          if(serial_data_p->disp_n[serial_p->disp] > serial_data_p->disp_max)
+          {
+            serial_data_p->disp_n[serial_p->disp] = serial_data_p->disp_n[serial_p->disp]%(serial_data_p->disp_max+1);
+          }
+          serial_data_p->disp = serial_data_p->disp_n[serial_p->disp];
+          break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
       case STA_EDIT_REAR:
           cur_p->disp = cur_p->disp*10+5;
-          if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
+          if(cur_p->disp>cur_p->disp_max)cur_p->disp=cur_p->disp%(cur_p->disp_max+1);
           break;
       case STA_COMPENSATION:
           cur_p->disp = cur_p->disp*10+5;
@@ -574,11 +687,20 @@ void SW_N6_Down_CallBack(void *btn)
   {
       default:
         break;
+      case STA_OPTO_SWITCH:
+      case STA_CHANNEL_NUM:
+          serial_data_p->disp_n[serial_p->disp] = serial_data_p->disp_n[serial_p->disp] *10+6;
+          if(serial_data_p->disp_n[serial_p->disp] > serial_data_p->disp_max)
+          {
+            serial_data_p->disp_n[serial_p->disp] = serial_data_p->disp_n[serial_p->disp]%(serial_data_p->disp_max+1);
+          }
+          serial_data_p->disp = serial_data_p->disp_n[serial_p->disp];
+          break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
       case STA_EDIT_REAR:
           cur_p->disp = cur_p->disp*10+6;
-          if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
+          if(cur_p->disp>cur_p->disp_max)cur_p->disp=cur_p->disp%(cur_p->disp_max+1);
           break;
       case STA_COMPENSATION:
           cur_p->disp = cur_p->disp*10+6;
@@ -600,11 +722,20 @@ void SW_N7_Down_CallBack(void *btn)
   {
       default:
         break;
+      case STA_OPTO_SWITCH:
+      case STA_CHANNEL_NUM:
+          serial_data_p->disp_n[serial_p->disp] = serial_data_p->disp_n[serial_p->disp] *10+7;
+          if(serial_data_p->disp_n[serial_p->disp] > serial_data_p->disp_max)
+          {
+            serial_data_p->disp_n[serial_p->disp] = serial_data_p->disp_n[serial_p->disp]%(serial_data_p->disp_max+1);
+          }
+          serial_data_p->disp = serial_data_p->disp_n[serial_p->disp];
+          break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
       case STA_EDIT_REAR:
           cur_p->disp = cur_p->disp*10+7;
-          if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
+          if(cur_p->disp>cur_p->disp_max)cur_p->disp=cur_p->disp%(cur_p->disp_max+1);
           break;
       case STA_COMPENSATION:
           cur_p->disp = cur_p->disp*10+7;
@@ -626,11 +757,20 @@ void SW_N8_Down_CallBack(void *btn)
   {
       default:
         break;
+      case STA_OPTO_SWITCH:
+      case STA_CHANNEL_NUM:
+          serial_data_p->disp_n[serial_p->disp] = serial_data_p->disp_n[serial_p->disp] *10+8;
+          if(serial_data_p->disp_n[serial_p->disp] > serial_data_p->disp_max)
+          {
+            serial_data_p->disp_n[serial_p->disp] = serial_data_p->disp_n[serial_p->disp]%(serial_data_p->disp_max+1);
+          }
+          serial_data_p->disp = serial_data_p->disp_n[serial_p->disp];
+          break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
       case STA_EDIT_REAR:
           cur_p->disp = cur_p->disp*10+8;
-          if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
+          if(cur_p->disp>cur_p->disp_max)cur_p->disp=cur_p->disp%(cur_p->disp_max+1);
           break;
       case STA_COMPENSATION:
           cur_p->disp = cur_p->disp*10+8;
@@ -652,11 +792,20 @@ void SW_N9_Down_CallBack(void *btn)
   {
       default:
         break;
+      case STA_OPTO_SWITCH:
+      case STA_CHANNEL_NUM:
+          serial_data_p->disp_n[serial_p->disp] = serial_data_p->disp_n[serial_p->disp] *10+9;
+          if(serial_data_p->disp_n[serial_p->disp] > serial_data_p->disp_max)
+          {
+            serial_data_p->disp_n[serial_p->disp] = serial_data_p->disp_n[serial_p->disp]%(serial_data_p->disp_max+1);
+          }
+          serial_data_p->disp = serial_data_p->disp_n[serial_p->disp];
+          break;
       case STA_EDIT_CLEAR_TIME:
       case STA_EDIT:
       case STA_EDIT_REAR:
           cur_p->disp = cur_p->disp*10+9;
-          if(cur_p->disp>cur_p->data_max)cur_p->disp=cur_p->disp%(cur_p->data_max+1);
+          if(cur_p->disp>cur_p->disp_max)cur_p->disp=cur_p->disp%(cur_p->disp_max+1);
           break;
       case STA_COMPENSATION:
           cur_p->disp = cur_p->disp*10+9;
