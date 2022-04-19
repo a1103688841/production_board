@@ -268,8 +268,8 @@ static void peripheral_task(void* pvParameters)
       //peripheral
       flash.ms += cyc_ms;
       flash.sec_ms += cyc_ms;
-      //if(flash.ms > flash.ms_max && flash.disp_doing == FALSE)
-			if(flash.ms > flash.ms_max)
+      if(flash.ms > flash.ms_max && flash.disp_doing == FALSE)
+			//if(flash.ms > flash.ms_max)
       {
 				flash.ms =0;
         (flash.toggle)?(flash.toggle=0):(flash.toggle=1);

@@ -1,7 +1,7 @@
 /******************************************
  * @Author: rnf
  * @Date: 2022-04-17 15:32:34
- * @LastEditTime: 2022-04-19 00:24:36
+ * @LastEditTime: 2022-04-19 21:29:10
  * @LastEditors: rnf
  * @Description: 
  * @FilePath: \production_board\os\code\sys_dev\relay_24v.c
@@ -121,6 +121,7 @@ void relay_response(int64_t accumulative, int32_t cyc_ms)
     static int32_t ms2 = 0;
     static int32_t ms3 = 0;
     static int32_t ms4 = 0;
+    static int8_t  sta_prev;
     if(sta != STA_NORMAL)
     {
         relay_lever(1, RESET);
@@ -129,6 +130,10 @@ void relay_response(int64_t accumulative, int32_t cyc_ms)
         relay_lever(4, RESET);
         return;
     } 
+    if(sta == STA_NORMAL && sta_prev != STA_NORMAL)
+    {
+        accumulative_prev = accumulative;
+    }
     if(accumulative == 0) return;
     if(accumulative_prev != accumulative)
     {
@@ -178,4 +183,5 @@ void relay_response(int64_t accumulative, int32_t cyc_ms)
         relay_lever(NEXT_GLUE_DOWM_RELAY_UID, RESET);
     }
     accumulative_prev = accumulative;
+    sta_prev = sta;
 }

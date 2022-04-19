@@ -390,11 +390,22 @@ void SW_OK_Down_CallBack(void *btn)
       default:
         break;
       case STA_OPTO_SWITCH:
-      case STA_CHANNEL_NUM:
           syn_node_serial_disp2store(serial_data_p);
           write_store();
           syn_link_par_store2disp();
           set_accumulative_prev(accum_yield.disp);
+          set_par_lever_timermax(&sw_add,accum_yield.store_n[1]*10/BUTTON_CYCE);
+          set_par_sleep_timermax(&sw_add, accum_yield.store_n[2]*10/BUTTON_CYCE);		
+          set_par_long_timermax(&sw_add,accum_yield.store_n[3]*10/BUTTON_CYCE);
+          set_par_longcyc_timermax(&sw_add, accum_yield.store_n[3]*10/BUTTON_CYCE);
+          sta = STA_NORMAL;
+          disp_all_link();
+          cover_link_par_flash(FLASH_NULL);
+          break;
+      case STA_CHANNEL_NUM:
+          syn_node_serial_disp2store(serial_data_p);
+          write_store();
+          syn_link_par_store2disp();
           sta = STA_NORMAL;
           disp_all_link();
           cover_link_par_flash(FLASH_NULL);
@@ -972,39 +983,43 @@ void buttonAttachInit(void)
   Button_Attach(&sw_add,BUTTON_DOWN,SW_ADD_Down_CallBack);             //call fuction attach
 }
 
-/**************************************************************************************************
-* 函数:                                   mstaVarIni
-* 说明:   修改函数状态转移初始化
-**************************************************************************************************/
-void buttonStaInit(void *btn)
-{
-	
-}
 
-/* -------------------------------------------sw down callback ----------------------------------------- */
-//修改按键逻辑
-/* ----------------------------------------------------------------------------------------------------- */
-static void buttonRecord(SW_RECORDCODING_E btn_coding)
+/******************************************
+ * @description: 
+ * @param {Button_t} *btn
+ * @param {uint16_t} ms
+ * @return {*}
+******************************************/
+void set_par_lever_timermax(Button_t *btn , uint16_t cnt)
 {
-    //记录按键
-    if (btn_coding == SW0_DOWN )
-    {
-        memset((void *)&sw_record, 0, sizeof(sw_record));
-    }
-    sw_record.bin[sw_record.i++] = btn_coding;
-    if (sw_record.i > BTNRECORDMAX)
-    {
-        sw_record.i = 0;
-    }
-    
-    //校准
-    if (FALSE)
-    {
-        //清空密码
-        memset((void *)&sw_record, 0, sizeof(sw_record));       
-    }
+  if(cnt < BUTTON_LEVEL_STABLE)
+  {
+    btn->level_timermax = BUTTON_LEVEL_STABLE;
+  }
+  else
+  {
+    btn->level_timermax = cnt;
+  }
 }
-
+void set_par_long_timermax(Button_t *btn , uint16_t cnt)
+{
+  if(cnt >= 99990/BUTTON_CYCE - 20)
+  {
+    btn->long_timermax = UINT16_MAX;
+  }
+  else
+  {
+    btn->long_timermax = cnt;
+  }
+}
+void set_par_longcyc_timermax(Button_t *btn , uint16_t cnt)
+{
+  btn->longcyc_timermax = cnt;
+}
+void set_par_sleep_timermax(Button_t *btn , uint16_t cnt)
+{
+  btn->sleep_timermax = cnt;
+}
 /* ------------------------------------------- funtion ----------------------------------------- */
 //内部函数
 /* ------------------------------------------- funtion ----------------------------------------- */
@@ -1219,7 +1234,114 @@ void Button_Cycle_Process(Button_t *btn)
   }
 
 }
+/******************************************
+ * @description: 
+ * @param {Button_t} *btn
+ * @return {*}
+******************************************/
+void Button_Cycle_Process_add(Button_t *btn)
+{
+  if(btn->Button_State == BUTTON_SLEEP)
+  {
+    btn->sleep_timecnt ++;
+    if(btn->sleep_timecnt < btn->sleep_timermax)
+    {
+      return;
+    }
+    else
+    {
+      btn->Button_State = NONE_TRIGGER;
+    }
+  }
+  //upadta level state
+  uint8_t current_level = (uint8_t)btn->Read_Button_Level();
+  //rise
+  if(btn->Button_Last_Level == LOW && current_level == HIGHT)
+  {
+    btn->level_timercnt++;
+    if(btn->level_timercnt > btn->level_timermax)
+    {
+      btn->Button_Last_Level = current_level;
+      btn->level_timercnt = 0;
+      btn->Button_State   = BUTTON_DOWN;
+    }
+  }
+  //fall
+  else if(btn->Button_Last_Level == HIGHT && current_level == LOW)
+  {
+    btn->level_timercnt++;
+    if(btn->level_timercnt > BUTTON_LEVEL_STABLE)
+    {
+      btn->Button_Last_Level = current_level;
+      btn->level_timercnt = 0;
+      btn->Button_State   = BUTTON_UP;
+    }
+  }
+  //other
+  else if(current_level == btn->Button_Last_Level)
+  {
+    btn->level_timercnt = 0;
+  }
+  
+  switch(btn->Button_State)
+  {
+    case BUTTON_DOWN :           
+      //按下定时器计数
+      if(btn->down_timecnt <= btn->long_timermax)
+      {
+        btn->down_timecnt++;   
+        if(btn->long_timermax == UINT16_MAX && btn->down_timecnt > INT16_MAX)
+        {
+            btn->down_timecnt = INT16_MAX;
+        }
+      }
+      //单击
+      if (btn->down_timecnt < btn->long_timermax)
+      {
+        btn->Button_Trigger_Event = BUTTON_DOWN; 
+      }
+      //长按
+      else if(btn->down_timecnt == btn->long_timermax)      //释放按键前更新触发事件为长按
+      {
+        btn->Button_Trigger_Event = BUTTON_LONG; 
+        TRIGGER_CB(BUTTON_DOWN);                //第一次长按
+      }            
+      //长按后
+      else if(btn->down_timecnt > btn->long_timermax)
+      {
+        btn->cycle_timercnt++;
+        if(btn->cycle_timercnt >= btn->longcyc_timermax)    //连续触发长按的周期
+        {
+          btn->cycle_timercnt = 0;
+          btn->Button_Trigger_Event = BUTTON_LONG; 
+          TRIGGER_CB(BUTTON_DOWN);                        //长按连续触发
+        }
+      }
+      break;
 
+    case BUTTON_UP :        // 弹起状态
+      //触发单击
+      if(btn->Button_Trigger_Event == BUTTON_DOWN)  
+      {
+          //单击
+          TRIGGER_CB(BUTTON_DOWN);    
+      }
+      if(btn->Button_Trigger_Event == BUTTON_LONG)  
+      {
+        if(btn->cycle_timercnt > btn->longcyc_timermax*0.7)
+          TRIGGER_CB(BUTTON_DOWN);    
+      }      
+      btn->sleep_timecnt = 0;
+      btn->cycle_timercnt = 0;
+      btn->down_timecnt=0;
+      btn->Button_State = BUTTON_SLEEP;
+      btn->Button_Trigger_Event = NONE_TRIGGER;
+      break;
+    default :
+      break;
+  }
+
+}
 /**************************************************************************************************
 * function	:                                   Button_Process
 * brief	:  			   scan each button and each button's each button event
@@ -1232,7 +1354,14 @@ void Button_Process(void)
   struct button* pass_btn;
   for(pass_btn = Head_Button; pass_btn != NULL; pass_btn = pass_btn->Next)
   {
-      Button_Cycle_Process(pass_btn);
+      if(pass_btn == &sw_add)
+      {
+        Button_Cycle_Process_add(pass_btn);
+      }
+      else
+      {
+        Button_Cycle_Process(pass_btn);
+      }
   }
 }
 
@@ -1305,8 +1434,10 @@ boolean_t Button_Create(const char *name,Button_t *btn,uint8_t(*read_btn_level)(
   btn->Button_Trigger_Level = HIGHT;  //按键触发电平
   btn->Button_Last_Level = btn->Read_Button_Level(); //按键当前电平
 	//debug_printf("btn:%d",btn->Button_Last_Level);
-  btn->level_timercnt = 0;
-	
+  btn->level_timercnt   = 0;
+	btn->level_timermax   = BUTTON_LEVEL_STABLE;
+  btn->long_timermax    = BUTTON_LONG_TIME;
+  btn->longcyc_timermax = BUTTON_LONG_CYCLE;
   //add to line tabe
   Add_Button(btn);          //add button line
   

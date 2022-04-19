@@ -106,6 +106,7 @@ typedef enum {
   BUTTON_LONG,
   BUTTON_LONG_FREE,
   BUTTON_CONTINUOS,
+  BUTTON_SLEEP,
   //这个没写
   BUTTON_CONTINUOS_FREE,
   BUTTON_ALL_RIGGER,
@@ -129,36 +130,19 @@ typedef struct button
   
   	Button_CallBack CallBack_Function[number_of_event];	/*这是一组函数指针数组，用于存放触发事件的函数头地址*/
   
-	uint8_t cycle_timercnt;	           				// 连续触发计数
-  	uint8_t level_timercnt;						    // 电平消抖计时 
-	uint8_t double_timecnt;						    // 双击间隔计数 
-	uint8_t down_timecnt;		  					// 按键按下持续计数 
-  
+	uint16_t cycle_timercnt;	           				// 连续触发计数
+  	uint16_t level_timercnt;						    // 电平消抖计时 
+	uint16_t double_timecnt;						    // 双击间隔计数 
+	uint16_t down_timecnt;		  					// 按键按下持续计数 
+	uint16_t sleep_timecnt;
+
+	uint16_t level_timermax;
+	uint16_t long_timermax;
+	uint16_t longcyc_timermax;
+	uint16_t sleep_timermax;
+
   	struct button *Next;
 }Button_t;
-
-//=====================================记录================================================
-typedef enum
-{
-    SW_NONE  = 0,
-    SW0_DOWN ,
-    SW0_LONG ,
-    SW1_DOWN ,
-    SW1_LONG ,
-    SW2_DOWN ,
-    SW2_LONG ,
-    SW3_DOWN ,
-    SW3_LONG ,
-    SW_OTHER ,
-}SW_RECORDCODING_E;
-
-#define BTNRECORDMAX 4
-
-typedef struct
-{
-	SW_RECORDCODING_E bin[BTNRECORDMAX+1];  
-	int16_t i;
-}SW_RECORDFIFO_S;
 
 /* ------------------------------------------- varivable ----------------------------------------- */
 #ifdef __BUTTON_C__
@@ -196,14 +180,15 @@ BUTTON_EXT Button_t 	sw_space;
 BUTTON_EXT Button_t 	sw_stop;
 BUTTON_EXT Button_t 	sw_clr;
 BUTTON_EXT Button_t 	sw_add;
-//记录按键的FIFO
-BUTTON_EXT SW_RECORDFIFO_S sw_record;
 
 /* ------------------------------------------- funtion ----------------------------------------- */
 
 
 extern void set_switch_code(uint8_t code);
-
+extern void set_par_lever_timermax(Button_t *btn , uint16_t ms);
+extern void set_par_long_timermax(Button_t *btn , uint16_t ms);
+extern void set_par_longcyc_timermax(Button_t *btn , uint16_t ms);
+extern void set_par_sleep_timermax(Button_t *btn , uint16_t cnt);
 /* externs */
 extern void Add_Button (Button_t* btn);
 extern void buttonAttachInit (void);
@@ -224,12 +209,6 @@ extern void SW1_Long_CallBack (void *btn);
 extern void set_matrix_button_code(uint64_t code);
 
 /* static function pre-declared */
-static void buttonGpioInit (void);
-static void buttonRecord (SW_RECORDCODING_E btn_coding);
-static uint8_t Read_SW0_Level (void);
-static uint8_t Read_SW1_Level (void);
-static uint8_t Read_SW2_Level (void);
-static uint8_t Read_SW3_Level (void);
 static char *StrnCopy (char *dst, const char *src, uint32_t n);
 
 

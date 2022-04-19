@@ -1,21 +1,12 @@
 /******************************************
  * @Author: rnf
  * @Date: 2022-04-05 19:19:44
- * @LastEditTime: 2022-04-18 23:56:06
+ * @LastEditTime: 2022-04-19 21:46:59
  * @LastEditors: rnf
  * @Description: 
  * @FilePath: \production_board\os\code\sys_bsp\bsp.c
  * @rnf wrote this code
 ******************************************/
-/************************************************** 
- * @Author: shuren
- * @Date: 2022-02-18 15:06:48
- * @LastEditTime: 2022-03-04 21:46:18
- * @LastEditors: shuren
- * @Description: 
- * @FilePath: \code\sys_bsp\bsp.c
- * @桃之夭夭，灼灼其华。之子于归， 宜其室家。
- **************************************************/
 #include "base_typle.h"
 #include "gd32f30x.h"
 #include "systick.h"
@@ -64,6 +55,14 @@ void bsp_init()
     link_parameter_init();
 
 	set_accumulative_prev(accum_yield.disp);
+
+
+set_par_lever_timermax(&sw_add,accum_yield.store_n[1]*10/BUTTON_CYCE);
+	set_par_sleep_timermax(&sw_add, accum_yield.store_n[2]*10/BUTTON_CYCE);		
+	set_par_long_timermax(&sw_add,accum_yield.store_n[3]*10/BUTTON_CYCE);
+	set_par_longcyc_timermax(&sw_add, accum_yield.store_n[3]*10/BUTTON_CYCE);
+
+	flash.ms_max = 300;
 	sta = STA_NORMAL;
 }
 

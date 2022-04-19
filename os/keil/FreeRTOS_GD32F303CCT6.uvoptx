@@ -117,6 +117,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
+          <Name></Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -144,40 +145,7 @@
           <Name></Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint>
-        <Bp>
-          <Number>0</Number>
-          <Type>0</Type>
-          <LineNumber>48</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134245396</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\code\sys_dev\switch.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\GD32F303\../code/sys_dev/switch.c\48</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>40</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134245362</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\code\sys_dev\switch.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\GD32F303\../code/sys_dev/switch.c\40</Expression>
-        </Bp>
-      </Breakpoint>
+      <Breakpoint/>
       <WatchWindow1>
         <Ww>
           <count>0</count>
@@ -278,6 +246,41 @@
           <count>19</count>
           <WinNumber>1</WinNumber>
           <ItemText>cyc_ms</ItemText>
+        </Ww>
+        <Ww>
+          <count>20</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>btn</ItemText>
+        </Ww>
+        <Ww>
+          <count>21</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>sw_add,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>22</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>serial_data_p,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>23</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>accum_yield,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>24</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>btn-&gt;cycle_timercnt</ItemText>
+        </Ww>
+        <Ww>
+          <count>25</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>btn-&gt;longcyc_timermax/0.7</ItemText>
+        </Ww>
+        <Ww>
+          <count>26</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>btn-&gt;longcyc_timermax</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

@@ -1,7 +1,7 @@
 /******************************************
  * @Author: rnf
  * @Date: 2022-04-03 15:32:33
- * @LastEditTime: 2022-04-18 20:30:34
+ * @LastEditTime: 2022-04-19 21:45:35
  * @LastEditors: rnf
  * @Description: 
  * @FilePath: \production_board\os\code\sys_dev\hc595.c
@@ -38,7 +38,8 @@
 ******************************************/
 static void hc595_delay()
 {
-    vTaskDelay(pdMS_TO_TICKS(1));
+	uint32_t i;
+    for(i=0; i<10000; i++);
 }
 /******************************************
  * @description: 
