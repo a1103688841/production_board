@@ -1,7 +1,7 @@
 /******************************************
  * @Author: rnf
  * @Date: 2022-04-17 15:32:34
- * @LastEditTime: 2022-04-23 15:37:17
+ * @LastEditTime: 2022-04-23 18:31:15
  * @LastEditors: rnf
  * @Description: 
  * @FilePath: \production_board\os\code\sys_dev\relay_24v.c
@@ -100,10 +100,10 @@ void relay_lever(uint8_t uid, uint8_t lever)
 #define NEXT_GLUE_UP_RELAY_UID    3
 #define NEXT_GLUE_DOWM_RELAY_UID  4
 
-#define PREV_GLUE_UP_STORE_UID    1
-#define PREV_GLUE_DOWM_STORE_UID  2
-#define NEXT_GLUE_UP_STORE_UID    3
-#define NEXT_GLUE_DOWM_STORE_UID  4
+#define PREV_GLUE_UP_STORE_UID    4
+#define PREV_GLUE_DOWM_STORE_UID  1
+#define NEXT_GLUE_UP_STORE_UID    2
+#define NEXT_GLUE_DOWM_STORE_UID  3
 /******************************************
  * @description: 
  * @param {int64_t} accumulative
