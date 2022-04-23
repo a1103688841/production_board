@@ -103,12 +103,12 @@ static void AppTaskCreate(void)
                         (void*          )NULL,	/* 任务入口函数参数 */
                         (UBaseType_t    )3,	    /* 任务的优先级 */
                         (TaskHandle_t*  )&nixie_tube_task_handle);/* 任务控制块指针 */
- xReturn = xTaskCreate((TaskFunction_t )nixie_tube_task_2, /* 任务入口函数 */
-                        (const char*    )"nixie_tube_task_2",/* 任务名字 */
-                        (uint16_t       )128,   /* 任务栈大小 */
-                        (void*          )NULL,	/* 任务入口函数参数 */
-                        (UBaseType_t    )3,	    /* 任务的优先级 */
-                        (TaskHandle_t*  )&nixie_tube_task_handle_2);/* 任务控制块指针 */
+// xReturn = xTaskCreate((TaskFunction_t )nixie_tube_task_2, /* 任务入口函数 */
+//                        (const char*    )"nixie_tube_task_2",/* 任务名字 */
+//                        (uint16_t       )128,   /* 任务栈大小 */
+//                        (void*          )NULL,	/* 任务入口函数参数 */
+//                        (UBaseType_t    )3,	    /* 任务的优先级 */
+//                        (TaskHandle_t*  )&nixie_tube_task_handle_2);/* 任务控制块指针 */
  xReturn = xTaskCreate((TaskFunction_t )peripheral_task, /* 任务入口函数 */
                         (const char*    )"peripheral_task",/* 任务名字 */
                         (uint16_t       )128,   /* 任务栈大小 */
@@ -182,16 +182,16 @@ static void dhtc12_task(void* pvParameters)
 {
 		//Absolute time delay
     static portTickType PreviousWakeTime; 
-    const portTickType TimeIncrement = pdMS_TO_TICKS(1000); 
+    const portTickType TimeIncrement = pdMS_TO_TICKS(3000); 
     PreviousWakeTime = xTaskGetTickCount(); 
 		//dhtc init
 		int16_t tem_data;
 		uint16_t hum_data;
-		dhtc12_init();
     while(1)
     {
 			//time synchronization 
       vTaskDelayUntil( &PreviousWakeTime,TimeIncrement);    
+			dhtc12_init();
 			//dhtc read			
 			dhtc12_read_all(&tem_data, &hum_data);
       hum.data = hum_data;
@@ -219,7 +219,9 @@ static void nixie_tube_task(void* pvParameters)
   for (i=0; i<34; i++)
   {
     send_num(8, TRUE); 
+		send_num2(8, TRUE); 
   }
+  hc595_2_parallel_output();
   hc595_parallel_output();
 	vTaskDelay(pdMS_TO_TICKS(2000));
   while(1)
@@ -227,6 +229,9 @@ static void nixie_tube_task(void* pvParameters)
     vTaskDelayUntil(&PreviousWakeTime,TimeIncrement);    
     flash.disp_doing = TRUE;
     disp_refresh_task();
+		disp_refresh_task_2();
+		hc595_2_parallel_output();
+		hc595_parallel_output();
     flash.disp_doing = FALSE;
   }
 }

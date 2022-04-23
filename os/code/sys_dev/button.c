@@ -413,9 +413,27 @@ void SW_OK_Down_CallBack(void *btn)
       case STA_DATA_RST:
       case STA_EDIT_CLEAR_TIME:
       case STA_COMPENSATION:
-      case STA_EDIT:
+          syn_link_par_disp2store();
+          write_store();
+          set_accumulative_prev(accum_yield.disp);
+          sta = STA_NORMAL;
+          disp_all_link();
+          cover_link_par_flash(FLASH_NULL);
+          break;
       case STA_EDIT_REAR:
           syn_link_par_disp2store();
+          cur_yield_front.disp = cur_yield_rear.disp;
+          cur_yield_front.store = cur_yield_rear.store;
+          write_store();
+          set_accumulative_prev(accum_yield.disp);
+          sta = STA_NORMAL;
+          disp_all_link();
+          cover_link_par_flash(FLASH_NULL);
+          break;
+      case STA_EDIT:
+          syn_link_par_disp2store();
+          cur_yield_rear.disp = cur_yield_front.disp;
+          cur_yield_rear.store = cur_yield_front.store;
           write_store();
           set_accumulative_prev(accum_yield.disp);
           sta = STA_NORMAL;
@@ -521,6 +539,17 @@ void SW_F4_Down_CallBack(void *btn)
 }
 void SW_DOT_Down_CallBack(void *btn)
 {
+  // switch (sta)
+  // {
+  //     default:
+  //       break;
+  //     case STA_OFF:
+  //       sta = STA_ADDR;
+  //       set_link_head(&prev_glue_up);
+  //       cover_link_par_flash(FLASH_NULL);
+  //       prev_glue_up.flash  = FLASH_ALL;
+  //       break;
+  // }
 }
 /******************************************
  * @description: 

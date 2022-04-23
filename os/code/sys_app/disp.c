@@ -686,7 +686,7 @@ void disp_refresh_task()
  	}else{
  		send_null(3);     
  	}
-	hc595_parallel_output();
+	//hc595_parallel_output();
 }
 /******************************************
  * @description: 
@@ -734,8 +734,8 @@ void disp_refresh_task_2()
    p = &prev_glue_up;
 	if(search_link(p))
    { 
-       num_deal2(p,2,NDP);
-       num_deal2(p,1,NDP); 
+       num_reverse_deal2(p,2,NDP);
+       num_reverse_deal2(p,1,NDP); 
 	}else{
 		send_null2(2);     
 	}
@@ -751,5 +751,5 @@ void disp_refresh_task_2()
  	}else{
         send_null2(4);  
  	}
-	hc595_2_parallel_output();
+	//hc595_2_parallel_output();
 }

@@ -39,7 +39,7 @@
 static void hc595_delay()
 {
 	uint32_t i;
-    for(i=0; i<10000; i++);
+    for(i=0; i<1000; i++);
 }
 /******************************************
  * @description: 

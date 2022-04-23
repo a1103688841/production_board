@@ -1,7 +1,7 @@
 /******************************************
  * @Author: rnf
  * @Date: 2022-04-05 19:19:44
- * @LastEditTime: 2022-04-18 23:27:50
+ * @LastEditTime: 2022-04-23 13:33:52
  * @LastEditors: rnf
  * @Description: 
  * @FilePath: \production_board\os\code\sys_app\main.h
@@ -20,6 +20,7 @@ enum
     STA_TIME,       //设置时间 
     STA_CLEAR_TIME,
     STA_COMPENSATION,   //设置温湿度补偿
+    STA_ADDR,
     STA_CNT_PAR,
 };
 
