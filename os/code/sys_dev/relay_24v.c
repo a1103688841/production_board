@@ -1,7 +1,7 @@
 /******************************************
  * @Author: rnf
  * @Date: 2022-04-17 15:32:34
- * @LastEditTime: 2022-04-19 21:29:10
+ * @LastEditTime: 2022-04-23 15:37:17
  * @LastEditors: rnf
  * @Description: 
  * @FilePath: \production_board\os\code\sys_dev\relay_24v.c
@@ -124,34 +124,38 @@ void relay_response(int64_t accumulative, int32_t cyc_ms)
     static int8_t  sta_prev;
     if(sta != STA_NORMAL)
     {
+        ms1 = ms2 = ms3 = ms4 = 0;
         relay_lever(1, RESET);
         relay_lever(2, RESET);
         relay_lever(3, RESET);
         relay_lever(4, RESET);
         return;
     } 
+    if(accumulative == 0) 
+    {
+        return;
+    }
     if(sta == STA_NORMAL && sta_prev != STA_NORMAL)
     {
         accumulative_prev = accumulative;
     }
-    if(accumulative == 0) return;
     if(accumulative_prev != accumulative)
     {
         if(accumulative%channel_num_p->store_n[PREV_GLUE_UP_STORE_UID] == 0)
         {
-            ms1 += prev_glue_up.store*1000+cyc_ms;
+            ms1 += prev_glue_up.store*1000;
         }
         if(accumulative%channel_num_p->store_n[PREV_GLUE_DOWM_STORE_UID] == 0)
         {
-            ms2 += prev_glue_dowm.store*1000+cyc_ms;
+            ms2 += prev_glue_dowm.store*1000;
         }
         if(accumulative%channel_num_p->store_n[NEXT_GLUE_UP_STORE_UID] == 0)
         {
-            ms3 += next_glue_up.store*1000+cyc_ms;
+            ms3 += next_glue_up.store*1000;
         }
         if(accumulative%channel_num_p->store_n[NEXT_GLUE_DOWM_STORE_UID] == 0)
         {
-            ms4 += next_glue_dowm.store*1000+cyc_ms;
+            ms4 += next_glue_dowm.store*1000;
         }    
     }
     if(ms1 > 1)

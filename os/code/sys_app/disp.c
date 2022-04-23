@@ -610,18 +610,30 @@ void disp_refresh_task()
     //    num_deal2(p,4,NDP); 
     //    num_deal2(p,5,NDP);
     //    num_deal2(p,6,NDP);
-       num_deal(p,7,NDP);
-       num_deal(p,8,NDP);
-       num_deal(p,9,NDP);
-       num_deal(p,10,NDP);
-       num_deal(p,11,NDP);
-       num_deal(p,12,NDP);
-       num_deal(p,13,NDP);
-       num_deal(p,14,NDP);
+       if(sta == STA_ADDR)
+       {
+            send_null(4); 
+            num_deal(p,11,NDP);
+            num_deal(p,12,NDP);
+            num_deal(p,13,NDP);
+            num_deal(p,14,NDP);
+       }
+       else
+       {
+            num_deal(p,7,NDP);
+            num_deal(p,8,NDP);
+            num_deal(p,9,NDP);
+            num_deal(p,10,NDP);
+            num_deal(p,11,NDP);
+            num_deal(p,12,NDP);
+            num_deal(p,13,NDP);
+            num_deal(p,14,NDP);
+       }
  	}else{
         // send_null2(4);
  		send_null(8);     
  	}
+     
     p = &accum_yield;
  	if(search_link(p))
     { 
@@ -744,10 +756,17 @@ void disp_refresh_task_2()
  	if(search_link(p))
     { 
         //skip second
-       num_deal2(p,3,NDP);
-       num_deal2(p,4,NDP); 
-       num_deal2(p,5,flash.sec_toggle);
-       num_deal2(p,6,NDP);
+       if(sta == STA_ADDR)
+       {
+            send_null2(4); 
+       }
+       else
+       {
+            num_deal2(p,3,NDP);
+            num_deal2(p,4,NDP); 
+            num_deal2(p,5,flash.sec_toggle);
+            num_deal2(p,6,NDP);
+       }
  	}else{
         send_null2(4);  
  	}

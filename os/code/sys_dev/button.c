@@ -167,6 +167,12 @@ void SW_OFF_Down_CallBack(void *btn)
           disp_all_link();
           cover_link_par_flash(FLASH_NULL);
           break;
+      case STA_ADDR:
+          time.disp = time.data;
+          sta = STA_NORMAL;
+          disp_all_link();
+          cover_link_par_flash(FLASH_NULL);
+          break;
       case STA_COMPENSATION:
       case STA_TIME:
           sta = STA_NORMAL;
@@ -291,6 +297,10 @@ void SW_DEL_Down_CallBack(void *btn)
           cover_link_par_flash(FLASH_NULL);
           cur_yield_rear.flash  = FLASH_ALL;      
         break;
+      case STA_ADDR:
+          cur_p->disp_n[1] = 0;
+          cur_p->disp = cur_p->disp_n[1];
+          break;
       case STA_EDIT_CLEAR_TIME:
       case STA_COMPENSATION:
       case STA_EDIT:
@@ -368,6 +378,7 @@ void SW_F2_Down_CallBack(void *btn)
   {
       default:
 					break;
+      case STA_ADDR: 
       case STA_TIME:
           cur_p->flash++;
           if(cur_p->flash > cur_p->position_max) cur_p->flash = cur_p->position_max;
@@ -440,6 +451,14 @@ void SW_OK_Down_CallBack(void *btn)
           disp_all_link();
           cover_link_par_flash(FLASH_NULL);
           break;
+      case STA_ADDR:
+          time.disp = time.data;
+          syn_node_serial_disp2store(&time);
+          write_store();
+          sta = STA_NORMAL;
+          disp_all_link();
+          cover_link_par_flash(FLASH_NULL);
+          break;
       case STA_TIME:
           //miniter
           if(cheak_rtc(cur_p->disp)==TRUE)
@@ -468,6 +487,11 @@ void SW_F3_Down_CallBack(void *btn)
       case STA_COMPENSATION:
           cur_p->single = 1;
           break;
+      case STA_ADDR: 
+          //no moth day hour min second
+          cur_p->flash--;
+          if(cur_p->flash < 11) cur_p->flash = 11;
+        break;
       case STA_TIME:
           //no second
           cur_p->flash--;
@@ -504,7 +528,11 @@ void SW_N0_Down_CallBack(void *btn)
       case STA_COMPENSATION:
           cur_p->disp = cur_p->disp *10;
           if(cur_p->disp>99)cur_p->disp=cur_p->disp%(99+1);
-          break;      
+          break;
+      case STA_ADDR:      
+          cur_p->disp_n[1] = set_data(cur_p->disp, cur_p->flash, 0);
+          cur_p->disp = cur_p->disp_n[1];
+          break;
       case STA_TIME:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 0);
           break;
@@ -539,17 +567,18 @@ void SW_F4_Down_CallBack(void *btn)
 }
 void SW_DOT_Down_CallBack(void *btn)
 {
-  // switch (sta)
-  // {
-  //     default:
-  //       break;
-  //     case STA_OFF:
-  //       sta = STA_ADDR;
-  //       set_link_head(&prev_glue_up);
-  //       cover_link_par_flash(FLASH_NULL);
-  //       prev_glue_up.flash  = FLASH_ALL;
-  //       break;
-  // }
+  switch (sta)
+  {
+      default:
+        break;
+      case STA_OFF:
+        sta = STA_ADDR;
+        set_link_head(&time);
+        cover_link_par_flash(FLASH_NULL);
+        cur_p->disp = cur_p->store_n[1];
+        cur_p->flash  = 11;
+        break;
+  }
 }
 /******************************************
  * @description: 
@@ -581,6 +610,10 @@ void SW_N1_Down_CallBack(void *btn)
           cur_p->disp = cur_p->disp*10+1;
           if(cur_p->disp>99)cur_p->disp=cur_p->disp%(99+1);
           break;      
+      case STA_ADDR: 
+          cur_p->disp_n[1] = set_data(cur_p->disp, cur_p->flash, 1);
+          cur_p->disp = cur_p->disp_n[1];
+          break;
       case STA_TIME:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 1);
           break;
@@ -615,7 +648,11 @@ void SW_N2_Down_CallBack(void *btn)
       case STA_COMPENSATION:
           cur_p->disp = cur_p->disp*10+2;
           if(cur_p->disp>99)cur_p->disp=cur_p->disp%(99+1);
-          break;      
+          break;
+      case STA_ADDR:       
+          cur_p->disp_n[1] = set_data(cur_p->disp, cur_p->flash, 2);
+          cur_p->disp = cur_p->disp_n[1];
+          break;
       case STA_TIME:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 2);
           break;
@@ -650,7 +687,11 @@ void SW_N3_Down_CallBack(void *btn)
       case STA_COMPENSATION:
           cur_p->disp = cur_p->disp*10+3;
           if(cur_p->disp>cur_p->disp_max)cur_p->disp=cur_p->disp%(99+1);
-          break;      
+          break;   
+      case STA_ADDR:    
+          cur_p->disp_n[1] = set_data(cur_p->disp, cur_p->flash, 3);
+          cur_p->disp = cur_p->disp_n[1];
+          break;
       case STA_TIME:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 3);
           break;
@@ -685,8 +726,12 @@ void SW_N4_Down_CallBack(void *btn)
       case STA_COMPENSATION:
           cur_p->disp = cur_p->disp*10+4;
           if(cur_p->disp>99)cur_p->disp=cur_p->disp%(99+1);
-          break;      
-       case STA_TIME:
+          break; 
+      case STA_ADDR:      
+          cur_p->disp_n[1] = set_data(cur_p->disp, cur_p->flash, 4);
+          cur_p->disp = cur_p->disp_n[1];
+          break;
+      case STA_TIME:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 4);
           break;
   }
@@ -720,7 +765,11 @@ void SW_N5_Down_CallBack(void *btn)
       case STA_COMPENSATION:
           cur_p->disp = cur_p->disp*10+5;
           if(cur_p->disp>99)cur_p->disp=cur_p->disp%(99+1);
-          break;      
+          break;  
+      case STA_ADDR:     
+          cur_p->disp_n[1] = set_data(cur_p->disp, cur_p->flash, 5);
+          cur_p->disp = cur_p->disp_n[1];
+          break;
       case STA_TIME:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 5);
           break;
@@ -756,6 +805,10 @@ void SW_N6_Down_CallBack(void *btn)
           cur_p->disp = cur_p->disp*10+6;
           if(cur_p->disp>99)cur_p->disp=cur_p->disp%(99+1);
           break;      
+      case STA_ADDR: 
+          cur_p->disp_n[1] = set_data(cur_p->disp, cur_p->flash, 6);
+          cur_p->disp = cur_p->disp_n[1];
+          break;
       case STA_TIME:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 6);
           break;
@@ -790,7 +843,11 @@ void SW_N7_Down_CallBack(void *btn)
       case STA_COMPENSATION:
           cur_p->disp = cur_p->disp*10+7;
           if(cur_p->disp>99)cur_p->disp=cur_p->disp%(99+1);
-          break;      
+          break;   
+      case STA_ADDR:    
+          cur_p->disp_n[1] = set_data(cur_p->disp, cur_p->flash, 7);
+          cur_p->disp = cur_p->disp_n[1];
+          break;
       case STA_TIME:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 7);
           break;
@@ -826,6 +883,10 @@ void SW_N8_Down_CallBack(void *btn)
           cur_p->disp = cur_p->disp*10+8;
           if(cur_p->disp>99)cur_p->disp=cur_p->disp%(99+1);
           break;      
+      case STA_ADDR: 
+          cur_p->disp_n[1] = set_data(cur_p->disp, cur_p->flash, 8);
+          cur_p->disp = cur_p->disp_n[1];
+          break;
       case STA_TIME:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 8);
           break;
@@ -860,7 +921,11 @@ void SW_N9_Down_CallBack(void *btn)
       case STA_COMPENSATION:
           cur_p->disp = cur_p->disp*10+9;
           if(cur_p->disp>99)cur_p->disp=cur_p->disp%(99+1);
-          break;          
+          break;     
+      case STA_ADDR:      
+          cur_p->disp_n[1] = set_data(cur_p->disp, cur_p->flash, 9);
+          cur_p->disp = cur_p->disp_n[1];
+          break;
       case STA_TIME:
           cur_p->disp = set_data(cur_p->disp, cur_p->flash, 9);
           break;
@@ -892,6 +957,8 @@ void SW_CLR_Down_CallBack(void *btn)
       case STA_NORMAL:
         cur_yield_front.disp = 0;
         cur_yield_rear.disp = 0;
+        cur_yield_front.store = 0;
+        cur_yield_rear.store = 0;
         break;
       case STA_OFF:
         break;
@@ -907,6 +974,9 @@ void SW_CLR_LONG_CallBack(void *btn)
         accum_yield.disp = 0;
         cur_yield_front.disp = 0;
         cur_yield_rear.disp = 0;
+        accum_yield.store = 0;
+        cur_yield_front.store = 0;
+        cur_yield_rear.store = 0;
         break;
       case STA_OFF:
         break;
@@ -921,7 +991,10 @@ void SW_ADD_Down_CallBack(void *btn)
       case STA_NORMAL:
         accum_yield.disp++;
         cur_yield_front.disp++;
-        cur_yield_rear.disp++;
+        cur_yield_rear.disp = cur_yield_front.disp;
+        accum_yield.store = accum_yield.disp;
+        cur_yield_front.store = cur_yield_front.disp;
+        cur_yield_rear.store = cur_yield_rear.disp;
         break;
       case STA_OFF:
         break;
